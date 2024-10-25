@@ -1,14 +1,9 @@
 package com.example.cryptomatthew.ui.home
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Room
-import com.example.cryptomatthew.DBApplication
 import com.example.cryptomatthew.data.local.AppDatabase
 import com.example.cryptomatthew.data.local.entities.CurrencyEntity
 import com.example.cryptomatthew.data.network.NetworkRepository
@@ -25,6 +20,8 @@ class HomeViewModel(application: Application) : ViewModel() {
 
     private val _currencies = MutableStateFlow<Currencies>(emptyList())
     val currencies: StateFlow<Currencies> = _currencies.asStateFlow()
+    val db = AppDatabase.getDatabase(application)
+    val dao = db.currencyDao()
 
     init {
        networkRepository.fetchTickersList(
@@ -35,18 +32,29 @@ class HomeViewModel(application: Application) : ViewModel() {
            onFailure = { t -> Log.d("HomeViewModel", "Error while fetching tickers: ${t.message}")}
 
        )
-        //dao.insert(Currency())
+        //insertCurrency(CurrencyEntity("btc", 1, "bitcoin", "BTC"))
     }
 
-    fun getDatabase(context: Context) {
 
+
+    fun saveCurrencies(currencies: List<CurrencyEntity>) {
+        viewModelScope.launch {
+            for (x in currencies)
+                dao.insert(x)
+            Log.d("HomeViewModel", "inserted currency")
+
+        }
     }
 
-//    suspend fun insertCurrency(currency: Currency) {
-//        viewModelScope.launch {
-//            dao.insert(CurrencyEntity("btc", 1, "bitcoin", "BTC", null, null))
-//           // Log.d("HomeViewModel", dao.getCurrenciesWithFinancials().toString())
-//
-//        }
-//    }
+    fun getCurrencies() {
+        viewModelScope.launch {
+            dao.getCurrencies().let {
+                val currencies = it.map { Currency(it) }
+                _currencies.update { currencies }
+                Log.d("HomeViewModel", it.toString())
+
+            }
+
+        }
+    }
 }

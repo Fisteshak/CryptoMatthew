@@ -1,15 +1,14 @@
 package com.example.cryptomatthew.models
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import com.example.cryptomatthew.data.local.entities.CurrencyEntity
 import com.example.cryptomatthew.data.network.models.Ticker
 
 data class Currency(
     val rank: Int,
     val name: String,
     val symbol: String,
-    val finsUSD: Financials,
-    val finsRUB: Financials,
+    val finsUSD: Financials? = null,
+    val finsRUB: Financials? = null,
     val history: List<Tick>? = null,
 ) {
     constructor(ticker: Ticker) : this(
@@ -19,6 +18,15 @@ data class Currency(
         Financials(ticker.quotes.USD),
         Financials(ticker.quotes.RUB)
     )
+
+    constructor(currencyEntity: CurrencyEntity) : this(
+        currencyEntity.rank,
+        currencyEntity.name,
+        currencyEntity.symbol
+    )
+
+
 }
+
 
 typealias Currencies = List<Currency>
