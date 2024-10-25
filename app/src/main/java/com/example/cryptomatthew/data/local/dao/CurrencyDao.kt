@@ -14,7 +14,7 @@ interface CurrencyDao {
     @Query("SELECT * FROM currency")
     fun getCurrenciesWithFinancials(): List<CurrencyWithFinancials>
 
-    @Query("SELECT * FROM currency")
+    @Query("SELECT * FROM currency ORDER BY rank ASC")
     suspend fun getCurrencies(): List<CurrencyEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

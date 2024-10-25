@@ -12,12 +12,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cryptomatthew.data.local.entities.CurrencyEntity
 
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier) {
 
+    val homeViewModel: HomeViewModel = viewModel()
 
     val currencies by homeViewModel.currencies.collectAsStateWithLifecycle()
 
