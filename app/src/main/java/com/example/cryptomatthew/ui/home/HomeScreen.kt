@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.cryptomatthew.data.local.entities.CurrencyEntity
 
 
 @Composable
@@ -25,18 +24,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
     Column {
         Row (modifier = Modifier.fillMaxWidth()) {
+
             Button(
-                onClick = {
-                    homeViewModel.saveCurrencies(
-                        currencies.map { CurrencyEntity(it.name, it.rank, it.name, it.symbol) }
-                    )
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Save")
-            }
-            Button(
-                onClick = {homeViewModel.getCurrencies()},
+                onClick = { homeViewModel.getCurrencies() },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Load")

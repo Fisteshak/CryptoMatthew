@@ -14,6 +14,5 @@ data class Ticker(
     val last_updated: String?,
     val quotes: Quotes
 )
-typealias Tickers = List<Ticker>
 
 

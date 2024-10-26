@@ -69,21 +69,24 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
     // Retrofit with Scalar Converter
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
     // Moshi
     runtimeOnly("com.squareup.moshi:moshi-kotlin:1.15.1")
-//    // Moshi Converter
-//    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-//    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
 
     // Gson Converter
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // lifecycle binding
     runtimeOnly("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
-    // kotlinx-coroutines-core
+    // coroutines core
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+
+    // coroutines for android
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
     val lifecycle_version = "2.8.6"
     val room_version = "2.6.1"
@@ -94,7 +97,7 @@ dependencies {
     annotationProcessor(libs.androidx.room.room.compiler)
     ksp(libs.androidx.room.room.compiler)
 
-    // optional - Kotlin Extensions and Coroutines support for Room
+    // Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
     // ViewModel

@@ -1,6 +1,6 @@
 package com.example.cryptomatthew.models
 
-import androidx.room.Entity
+import com.example.cryptomatthew.data.local.entities.FinancialsEntity
 import com.example.cryptomatthew.data.network.models.Quote
 
 data class Financials(
@@ -28,5 +28,18 @@ data class Financials(
         q.percent_change_7d,
         q.percent_change_30d,
         q.percent_change_1y
+    )
+    constructor(f: FinancialsEntity) : this(
+        f.price,
+        f.volume24h,
+        f.volume24hChange24h,
+        f.marketCap,
+        f.marketCapChange24h,
+        f.percentChange1h,
+        f.percentChange12h,
+        f.percentChange24h,
+        f.percentChange7d,
+        f.percentChange30d,
+        f.percentChange1y
     )
 }
