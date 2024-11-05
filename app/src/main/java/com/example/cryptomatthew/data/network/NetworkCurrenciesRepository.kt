@@ -1,5 +1,6 @@
 package com.example.cryptomatthew.data.network
 
+import android.util.Log
 import com.example.cryptomatthew.data.network.models.Ticker
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,6 +24,7 @@ class NetworkCurrenciesRepository @Inject constructor(private val apiService: Co
 
             override fun onResponse(call: Call<List<Ticker>>, response: Response<List<Ticker>>) {
                 val tickers = response.body()
+                Log.d("Network", "onResponse: $tickers")
                 onResponse(response.code(), tickers)
             }
 

@@ -1,4 +1,4 @@
-package com.example.cryptomatthew
+package com.example.cryptomatthew.di
 
 import android.content.Context
 import androidx.room.Room

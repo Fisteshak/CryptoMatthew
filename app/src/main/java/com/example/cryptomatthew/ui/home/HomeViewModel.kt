@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -23,13 +26,23 @@ class HomeViewModel @Inject constructor(
 
     init {
 
-        syncDatabaseWithNetwork()
+        runTimer()
 
-        //getCurrencies()
+        getCurrencies()
+    }
+
+    fun runTimer() {
+        viewModelScope.launch {
+            while (true) {
+                syncDatabaseWithNetwork()
+
+                delay(1.minutes.toJavaDuration())
+            }
+        }
     }
 
     fun syncDatabaseWithNetwork() {
-        currenciesRepository.syncDatabaseWithNetwork(viewModelScope)
+        currenciesRepository.syncDatabaseWithNetwork()
     }
 
     fun getCurrencies() {
