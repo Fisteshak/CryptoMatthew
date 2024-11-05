@@ -1,6 +1,5 @@
 package com.example.cryptomatthew.data
 
-import android.util.Log
 import com.example.cryptomatthew.data.local.OfflineCurrenciesRepository
 import com.example.cryptomatthew.data.network.NetworkCurrenciesRepository
 import com.example.cryptomatthew.data.network.models.Ticker
@@ -20,33 +19,26 @@ class CurrenciesRepository @Inject constructor(
     }
 
 
-
-    suspend fun clearDB() {
+    private suspend fun clearDB() {
         offlineCurrenciesRepository.clearDB()
     }
 
-    suspend fun syncDatabaseWithNetwork() {
+    suspend fun updateCurrencies() {
+        networkCurrenciesRepository.latestTickers.collect {
+            val tickers = it.body()
+            if (it.code() == 200 && tickers != null) {
 
+                clearDB()
 
-        networkCurrenciesRepository.fetchTickers(
-            onResponse = {code, tickers ->
-                if (code == 200 && tickers != null) {
-
-
-                    clearDB()
-
-                    tickers.forEach {
-                        insertCurrency(it)
-                    }
-
-
+                for (ticker in tickers) {
+                    insertCurrency(ticker)
                 }
-            },
-            onFailure = {t ->
-                Log.d("Currencies Repo", "syncDatabaseWithNetwork: error while getting tickers: ${t.message}")
             }
-        )
+        }
+
+
     }
+//                Log.d("Currencies Repo", "syncDatabaseWithNetwork: error while getting tickers: ${t.message}")
 
     private suspend fun insertCurrency(it: Ticker) {
         val (currencyEntity, financialsEntityUSD, financialsEntityRUB) =

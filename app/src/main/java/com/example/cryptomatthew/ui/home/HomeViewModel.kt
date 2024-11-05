@@ -6,15 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.cryptomatthew.data.CurrenciesRepository
 import com.example.cryptomatthew.models.Currencies
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.time.delay
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.toJavaDuration
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -33,17 +31,14 @@ class HomeViewModel @Inject constructor(
 
     fun runTimer() {
         viewModelScope.launch {
-            while (true) {
-                syncDatabaseWithNetwork()
+            with (Dispatchers.IO) {
+                currenciesRepository.updateCurrencies()
 
-                delay(1.minutes.toJavaDuration())
             }
         }
     }
 
-    fun syncDatabaseWithNetwork() {
-        currenciesRepository.syncDatabaseWithNetwork()
-    }
+
 
     fun getCurrencies() {
         viewModelScope.launch {
