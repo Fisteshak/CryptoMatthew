@@ -33,4 +33,3 @@ data class Currency(
 }
 
 
-typealias Currencies = List<Currency>

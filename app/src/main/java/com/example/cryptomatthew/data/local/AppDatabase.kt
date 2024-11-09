@@ -8,7 +8,7 @@ import com.example.cryptomatthew.data.local.entities.FinancialsEntity
 import com.example.cryptomatthew.data.local.entities.TickEntity
 
 
-@Database(entities = [CurrencyEntity::class, FinancialsEntity::class, TickEntity::class], version = 1)
+@Database(entities = [CurrencyEntity::class, FinancialsEntity::class, TickEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun currencyDao(): CurrencyDao

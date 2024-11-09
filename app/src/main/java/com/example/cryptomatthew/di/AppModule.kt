@@ -90,7 +90,7 @@ object CurrencyRepositoryModule {
 
     @Provides
     @Singleton
-    fun provideNetworkCurrenciesRepository(api: CoinpaprikaAPI): NetworkCurrenciesRepository {
+    fun provideNetworkCurrenciesRepository(api: CoinpaprikaAPI) : NetworkCurrenciesRepository {
         return NetworkCurrenciesRepository(api)
     }
 

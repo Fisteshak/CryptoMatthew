@@ -1,12 +1,13 @@
 package com.example.cryptomatthew.data
 
+import android.util.Log
 import com.example.cryptomatthew.data.local.OfflineCurrenciesRepository
 import com.example.cryptomatthew.data.network.NetworkCurrenciesRepository
-import com.example.cryptomatthew.data.network.models.Ticker
-import com.example.cryptomatthew.data.utils.tickerToCurrencyAndFinancialsEntity
 import com.example.cryptomatthew.models.Currency
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.debounce
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 class CurrenciesRepository @Inject constructor(
     private val networkCurrenciesRepository: NetworkCurrenciesRepository,
@@ -15,7 +16,7 @@ class CurrenciesRepository @Inject constructor(
 
 
     fun getCurrencies(): Flow<List<Currency>> {
-        return offlineCurrenciesRepository.getCurrencies()
+        return offlineCurrenciesRepository.currencies.debounce(0.5.seconds)
     }
 
 
@@ -30,28 +31,18 @@ class CurrenciesRepository @Inject constructor(
 
                 clearDB()
 
-                for (ticker in tickers) {
-                    insertCurrency(ticker)
-                }
+                offlineCurrenciesRepository.insertCurrenciesData(tickers)
+            } else {
+                Log.d("Currencies Repo", "error while updating tickers: ${it.code()}, ${it.message()} ")
+
             }
+
         }
 
 
     }
-//                Log.d("Currencies Repo", "syncDatabaseWithNetwork: error while getting tickers: ${t.message}")
 
-    private suspend fun insertCurrency(it: Ticker) {
-        val (currencyEntity, financialsEntityUSD, financialsEntityRUB) =
-            tickerToCurrencyAndFinancialsEntity(it)
 
-        offlineCurrenciesRepository.insertCurrencyEntity(currencyEntity)
-        offlineCurrenciesRepository.insertFinancialsEntity(
-            financialsEntityUSD
-        )
-        offlineCurrenciesRepository.insertFinancialsEntity(
-            financialsEntityRUB
-        )
-    }
 
 
 }

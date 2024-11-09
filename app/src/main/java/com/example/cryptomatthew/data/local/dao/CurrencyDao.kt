@@ -6,15 +6,14 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.cryptomatthew.data.local.entities.CurrencyEntity
-import com.example.cryptomatthew.data.local.entities.CurrencyWithFinancials
 import com.example.cryptomatthew.data.local.entities.FinancialsEntity
+import com.example.cryptomatthew.data.network.models.Ticker
+import com.example.cryptomatthew.data.utils.tickerToCurrencyAndFinancialsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrencyDao {
-    @Transaction
-    @Query("SELECT * FROM currency")
-    fun getCurrenciesWithFinancials(): List<CurrencyWithFinancials>
+
 
     @Query("SELECT * FROM currency ORDER BY rank ASC")
     fun getAllCurrencies(): Flow<List<CurrencyEntity>>
@@ -27,6 +26,29 @@ interface CurrencyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFinancialsEntity(financialsEntity: FinancialsEntity)
+
+    @Transaction
+    suspend fun insertCurrencyData(ticker: Ticker) {
+
+    }
+
+    @Transaction
+    suspend fun insertCurrenciesData(tickers: List<Ticker>) {
+        for (ticker in tickers) {
+            val (currencyEntity, financialsEntityUSD, financialsEntityRUB) =
+                tickerToCurrencyAndFinancialsEntity(ticker)
+
+            insertCurrencyEntity(currencyEntity)
+            insertFinancialsEntity(financialsEntityUSD)
+            insertFinancialsEntity(financialsEntityRUB)
+        }
+    }
+
+    @Transaction
+    suspend fun clearDB() {
+        deleteAllCurrencyEntities()
+        deleteAllFinancialEntities()
+    }
 
     @Query("DELETE FROM currency")
     suspend fun deleteAllCurrencyEntities()
