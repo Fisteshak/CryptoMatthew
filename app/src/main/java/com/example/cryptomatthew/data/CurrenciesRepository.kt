@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.cryptomatthew.data.local.OfflineCurrenciesRepository
 import com.example.cryptomatthew.data.network.NetworkCurrenciesRepository
 import com.example.cryptomatthew.models.Currency
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import javax.inject.Inject
@@ -15,8 +16,9 @@ class CurrenciesRepository @Inject constructor(
 ) {
 
 
+    @OptIn(FlowPreview::class)
     fun getCurrencies(): Flow<List<Currency>> {
-        return offlineCurrenciesRepository.currencies.debounce(0.5.seconds)
+        return offlineCurrenciesRepository.currencies.debounce(3.seconds)
     }
 
 

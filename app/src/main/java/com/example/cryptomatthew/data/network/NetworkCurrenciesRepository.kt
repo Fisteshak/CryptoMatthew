@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class NetworkCurrenciesRepository @Inject constructor(
     private val currencyAPI: CoinpaprikaAPI,
-    private val refreshIntervalMs: Long = 5000 ,
+    private val refreshIntervalMs: Long = 60000 ,
 ) {
 
 
