@@ -22,7 +22,7 @@ interface CurrencyDao {
     @Query("SELECT * FROM financials")
     fun getAllFinancials(): Flow<List<FinancialsEntity>>
 
-    @Query("SELECT * FROM tick WHERE currencyId = :currencyId ORDER BY timestamp ASC")
+    @Query("SELECT * FROM tick WHERE currencyId = :currencyId ORDER BY timestampSeconds ASC")
     suspend fun getCurrencyTicks(currencyId: String): List<TickEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

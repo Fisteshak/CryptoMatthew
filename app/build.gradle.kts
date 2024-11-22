@@ -1,8 +1,11 @@
+val room_version = "2.6.1"
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.devtoolsKsp)
     id("com.google.dagger.hilt.android")
+    id("androidx.room")
 }
 
 android {
@@ -46,7 +49,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
+
+
 
 dependencies {
 
@@ -89,7 +97,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
     val lifecycle_version = "2.8.6"
-    val room_version = "2.6.1"
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -111,7 +118,10 @@ dependencies {
 
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
-    // https://mvnrepository.com/artifact/androidx.navigation/navigation-common
     runtimeOnly("androidx.navigation:navigation-common:$nav_version")
+    // charts
+    implementation("com.github.madrapps:plot:0.1.2")
+    // date tools
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
 
 }
