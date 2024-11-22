@@ -111,4 +111,7 @@ dependencies {
 
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
+    // https://mvnrepository.com/artifact/androidx.navigation/navigation-common
+    runtimeOnly("androidx.navigation:navigation-common:$nav_version")
+
 }
