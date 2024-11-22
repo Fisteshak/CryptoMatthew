@@ -1,7 +1,7 @@
 package com.example.cryptomatthew.models
 
 import com.example.cryptomatthew.data.local.entities.FinancialsEntity
-import com.example.cryptomatthew.data.network.models.Quote
+import com.example.cryptomatthew.data.network.models.NetworkQuote
 
 data class Financials(
     val price: Double,
@@ -16,7 +16,7 @@ data class Financials(
     val percentChange30d: Double? = null,
     val percentChange1y: Double? = null,
 ) {
-    constructor(q: Quote) : this(
+    constructor(q: NetworkQuote) : this(
         q.price,
         q.volume_24h,
         q.volume_24h_change_24h,

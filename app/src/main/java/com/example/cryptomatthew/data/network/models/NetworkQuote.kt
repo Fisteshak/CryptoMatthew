@@ -1,7 +1,7 @@
 package com.example.cryptomatthew.data.network.models
 
 
-data class Quote (
+data class NetworkQuote (
     val price: Double,
     val volume_24h: Double?,
     val volume_24h_change_24h: Double?,

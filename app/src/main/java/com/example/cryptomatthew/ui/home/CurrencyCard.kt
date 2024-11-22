@@ -1,5 +1,6 @@
 package com.example.cryptomatthew.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,16 +18,23 @@ import com.example.cryptomatthew.models.Currency
 import java.util.Locale
 
 @Composable
-fun CryptoCard(currency: Currency, modifier: Modifier = Modifier) {
+fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit, modifier: Modifier = Modifier) {
+
+
     Row(
         modifier
             .fillMaxWidth()
             .height(40.dp)
-            .padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(4.dp)
+            .clickable(onClick = {
+                onCurrencyClick(currency)
+            }),
+        verticalAlignment = Alignment.CenterVertically,
+
     ) {
         Text(
             text = currency.rank.toString(),
+
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(4.dp)
         )

@@ -7,7 +7,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.cryptomatthew.data.local.entities.CurrencyEntity
 import com.example.cryptomatthew.data.local.entities.FinancialsEntity
-import com.example.cryptomatthew.data.network.models.Ticker
+import com.example.cryptomatthew.data.local.entities.TickEntity
+import com.example.cryptomatthew.data.network.models.NetworkTicker
 import com.example.cryptomatthew.data.utils.tickerToCurrencyAndFinancialsEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -21,19 +22,25 @@ interface CurrencyDao {
     @Query("SELECT * FROM financials")
     fun getAllFinancials(): Flow<List<FinancialsEntity>>
 
+    @Query("SELECT * FROM tick WHERE currencyId = :currencyId ORDER BY timestamp ASC")
+    suspend fun getCurrencyTicks(currencyId: String): List<TickEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCurrencyEntity(currencyEntity: CurrencyEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFinancialsEntity(financialsEntity: FinancialsEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCurrencyTicks(ticks: List<TickEntity>)
+
     @Transaction
-    suspend fun insertCurrencyData(ticker: Ticker) {
+    suspend fun insertCurrencyData(ticker: NetworkTicker) {
 
     }
 
     @Transaction
-    suspend fun insertCurrenciesData(tickers: List<Ticker>) {
+    suspend fun insertCurrenciesData(tickers: List<NetworkTicker>) {
         for (ticker in tickers) {
             val (currencyEntity, financialsEntityUSD, financialsEntityRUB) =
                 tickerToCurrencyAndFinancialsEntity(ticker)

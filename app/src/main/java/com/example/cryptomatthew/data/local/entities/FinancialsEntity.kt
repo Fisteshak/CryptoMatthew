@@ -1,8 +1,7 @@
 package com.example.cryptomatthew.data.local.entities
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import com.example.cryptomatthew.data.network.models.Quote
+import com.example.cryptomatthew.data.network.models.NetworkQuote
 
 @Entity(tableName = "financials", primaryKeys = ["currencyId", "priceCurrency"])
 data class FinancialsEntity(
@@ -20,7 +19,7 @@ data class FinancialsEntity(
     val percentChange30d: Double? = null,
     val percentChange1y: Double? = null,
 ) {
-    constructor(q: Quote, currencyId: String, priceCurrency: String) : this(
+    constructor(q: NetworkQuote, currencyId: String, priceCurrency: String) : this(
         currencyId,
         priceCurrency,
         q.price,

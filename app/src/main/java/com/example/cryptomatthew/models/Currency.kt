@@ -2,17 +2,19 @@ package com.example.cryptomatthew.models
 
 import com.example.cryptomatthew.data.local.entities.CurrencyEntity
 import com.example.cryptomatthew.data.local.entities.FinancialsEntity
-import com.example.cryptomatthew.data.network.models.Ticker
+import com.example.cryptomatthew.data.network.models.NetworkTicker
 
 data class Currency(
+    val id: String,
     val rank: Int,
     val name: String,
     val symbol: String,
     var finsUSD: Financials? = null,
     var finsRUB: Financials? = null,
-    val history: List<Tick>? = null,
+    var history: List<Tick>? = null,
 ) {
-    constructor(ticker: Ticker) : this(
+    constructor(ticker: NetworkTicker) : this(
+        ticker.id,
         ticker.rank.toInt(),
         ticker.name,
         ticker.symbol,
@@ -21,6 +23,7 @@ data class Currency(
     )
 
     constructor(currencyEntity: CurrencyEntity, finsUSD: FinancialsEntity? = null, finsRUB: FinancialsEntity? = null) : this(
+        currencyEntity.id,
         currencyEntity.rank,
         currencyEntity.name,
         currencyEntity.symbol,

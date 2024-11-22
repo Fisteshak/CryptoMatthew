@@ -1,7 +1,7 @@
 package com.example.cryptomatthew.data.network.models
 
 
-data class Ticker(
+data class NetworkTicker(
     val id: String,
     val name: String,
     val symbol: String,
@@ -12,7 +12,7 @@ data class Ticker(
     val beta_value: Double?,
     val first_data_at: String?,
     val last_updated: String?,
-    val quotes: Quotes
+    val quotes: Network
 )
 
 

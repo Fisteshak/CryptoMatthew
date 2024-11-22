@@ -22,14 +22,35 @@ class HomeViewModel @Inject constructor(
     private val _currencies = MutableStateFlow<List<Currency>>(emptyList())
     val currencies: StateFlow<List<Currency>> = _currencies.asStateFlow()
 
+
+
     init {
-
-        runTimer()
-
-        getCurrencies()
+        runDataNetworkUpdateCoroutine()
+        runDataUpdateFlow()
     }
 
-    private fun runTimer() {
+
+    fun updateCurrencyHistory(currencyId: String) {
+        viewModelScope.launch {
+            Log.d( "ViewModel", "starting to update history for $currencyId")
+
+            with (Dispatchers.IO) {
+                currenciesRepository.updateCurrencyHistory(currencyId)
+                val x =_currencies.value.find { it.id == currencyId }
+
+                if (x != null) {
+                    x.history = currenciesRepository.getCurrencyHistory(currencyId)
+                    Log.d( "ViewModel", "updated history for $currencyId: ${x.history}")
+                } else {
+                    Log.d( "ViewModel", "failed to update history for $currencyId:")
+
+                }
+
+            }
+        }
+    }
+
+    private fun runDataNetworkUpdateCoroutine() {
         viewModelScope.launch {
             with (Dispatchers.IO) {
                 currenciesRepository.updateCurrencies()
@@ -38,9 +59,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
-
-    private fun getCurrencies() {
+    private fun runDataUpdateFlow() {
         viewModelScope.launch {
             currenciesRepository.getCurrencies().collect { x ->
                 _currencies.update { x }

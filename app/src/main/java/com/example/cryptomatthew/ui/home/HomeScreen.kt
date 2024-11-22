@@ -4,19 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cryptomatthew.models.Currency
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-
-    val homeViewModel: HomeViewModel = viewModel()
-
-    val currencies by homeViewModel.currencies.collectAsStateWithLifecycle()
+fun HomeScreen(
+    currencies: List<Currency>,
+    modifier: Modifier = Modifier,
+    onCurrencyClick: (currency: Currency) -> Unit
+) {
 
     Column {
 
@@ -26,7 +24,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         ) {
 
                 items(currencies.size) {
-                    index -> CryptoCard(currencies[index])
+                    index -> CryptoCard(currencies[index], onCurrencyClick)
                 }
         }
     }
