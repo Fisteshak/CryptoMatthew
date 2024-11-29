@@ -1,13 +1,14 @@
 package com.example.cryptomatthew.models
 
+import android.util.Log
 import com.example.cryptomatthew.data.local.entities.FinancialsEntity
-import com.example.cryptomatthew.data.network.models.NetworkQuote
+import java.util.Locale
 
 data class Financials(
-    val price: Double,
-    val volume24h: Double? = null,
+    val price: Price,
+    val volume24h: Price,
     val volume24hChange24h: Double? = null,
-    val marketCap: Double? = null,
+    val marketCap: Price,
     val marketCapChange24h: Double? = null,
     val percentChange1h: Double? = null,
     val percentChange12h: Double? = null,
@@ -16,24 +17,11 @@ data class Financials(
     val percentChange30d: Double? = null,
     val percentChange1y: Double? = null,
 ) {
-    constructor(q: NetworkQuote) : this(
-        q.price,
-        q.volume_24h,
-        q.volume_24h_change_24h,
-        q.market_cap,
-        q.market_cap_change_24h,
-        q.percent_change_1h,
-        q.percent_change_12h,
-        q.percent_change_24h,
-        q.percent_change_7d,
-        q.percent_change_30d,
-        q.percent_change_1y
-    )
-    constructor(f: FinancialsEntity) : this(
-        f.price,
-        f.volume24h,
+    constructor(f: FinancialsEntity, currencySymbol: String) : this(
+        Price(f.price, currencySymbol),
+        Price(f.volume24h, currencySymbol),
         f.volume24hChange24h,
-        f.marketCap,
+        Price(f.marketCap, currencySymbol),
         f.marketCapChange24h,
         f.percentChange1h,
         f.percentChange12h,
@@ -42,4 +30,35 @@ data class Financials(
         f.percentChange30d,
         f.percentChange1y
     )
+}
+
+data class Price(
+    val value: Double?,
+    val currencySymbol: String
+) {
+    fun formatShort(): String {
+
+        if (value == null) return "Нет данных"
+
+        val units = listOf(
+            "T" to 1_000_000_000_000.0,
+            "B" to 1_000_000_000.0,
+            "M" to 1_000_000.0,
+            "K" to 1_000.0
+        )
+        for ((suffix, threshold) in units) {
+            if (value >= threshold) {
+                Log.d("PriceFormatShort", "$currencySymbol ${value / threshold} $suffix" )
+                return String.format(Locale.FRANCE, "%s%.2f %s", currencySymbol, value / threshold, suffix)
+            }
+        }
+        return value.toString()
+    }
+
+    fun formatLong(): String {
+        if (value == null) return "Нет данных"
+
+        return String.format(Locale.FRANCE, "%s%,.2f", currencySymbol, value)
+    }
+
 }

@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cryptomatthew.models.Currency
-import java.util.Locale
 
 @Composable
 fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit, modifier: Modifier = Modifier) {
@@ -47,7 +46,7 @@ fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit
             .width(20.dp)
             .weight(1f))
         Text(
-            text = "${String.format(Locale.UK, "%.2f", currency.finsUSD?.price)}$",
+            text = currency.finsUSD?.price?.formatLong() ?: "",
             style = MaterialTheme.typography.titleMedium,
             modifier = modifier.padding(end = 16.dp)
 

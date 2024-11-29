@@ -1,35 +1,38 @@
 package com.example.cryptomatthew.ui.currencyScreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.cryptomatthew.models.Currency
+import com.example.cryptomatthew.models.History
 
 @Composable
-fun CurrencyInfoScreen(currency: Currency) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column {
+fun CurrencyInfoScreen(currency: Currency, history: History?, modifier: Modifier = Modifier) {
+    Surface(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.padding(6.dp)) {
 
+
+            Text(currency.name, style = MaterialTheme.typography.titleLarge)
+            Text(currency.symbol, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
             Row {
-                Text(currency.name)
-                Spacer(modifier = Modifier.weight(1f))
-                Text(currency.finsUSD!!.price.toString())
+                Text(currency.finsUSD?.price?.formatLong() ?: "", style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.weight(1f))
+                Text(currency.finsRUB?.price?.formatLong() ?: "", style = MaterialTheme.typography.titleLarge)
             }
-            if (currency.history != null) {
-                HistoryPlot(currency.history!!)
-                Log.d("CurrencyInfoScreen: ", "history for ${currency.id}: ${currency.history}")
-            }
-            else {
-                Log.d("CurrencyInfoScreen: ", "history for ${currency.id}: null")
 
-                Text("Loading")
-            }
+            HistoryPlotPlaceholder(history?.ticks)
+
+
+            StatisticsPanel(currency.finsUSD!!, "$")
+
 
         }
 

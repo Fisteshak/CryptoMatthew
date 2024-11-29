@@ -8,7 +8,7 @@ data class FinancialsEntity(
     val currencyId: String,        // example: btc-bitcoin
     val priceCurrency: String,     // example: USD
     val price: Double,
-    val volume24h: Double? = null,
+    val volume24h: Double,
     val volume24hChange24h: Double? = null,
     val marketCap: Double? = null,
     val marketCapChange24h: Double? = null,

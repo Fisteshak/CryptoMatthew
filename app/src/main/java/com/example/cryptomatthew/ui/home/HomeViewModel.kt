@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptomatthew.data.CurrenciesRepository
 import com.example.cryptomatthew.models.Currency
+import com.example.cryptomatthew.models.History
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,13 +23,13 @@ class HomeViewModel @Inject constructor(
     private val _currencies = MutableStateFlow<List<Currency>>(emptyList())
     val currencies: StateFlow<List<Currency>> = _currencies.asStateFlow()
 
-
+    private val _histories = MutableStateFlow<MutableList<History>>(mutableListOf())
+    val histories: StateFlow<List<History>> = _histories.asStateFlow()
 
     init {
         runDataNetworkUpdateCoroutine()
         runDataUpdateFlow()
     }
-
 
     fun updateCurrencyHistory(currencyId: String) {
         viewModelScope.launch {
@@ -36,15 +37,17 @@ class HomeViewModel @Inject constructor(
 
             with (Dispatchers.IO) {
                 currenciesRepository.updateCurrencyHistory(currencyId)
-                val x =_currencies.value.find { it.id == currencyId }
+                val history = _histories.value.find { it.currencyId == currencyId }
+                val newHistory = currenciesRepository.getCurrencyHistory(currencyId)
 
-                if (x != null) {
-                    x.history = currenciesRepository.getCurrencyHistory(currencyId)
-                    Log.d( "ViewModel", "updated history for $currencyId: ${x.history}")
+                if (history == null) {
+                    _histories.value.add(newHistory)
+                    Log.d( "ViewModel", "added history for $currencyId: ${newHistory}")
                 } else {
-                    Log.d( "ViewModel", "failed to update history for $currencyId:")
-
+                    _histories.value[_histories.value.indexOf(history)] = newHistory
+                    Log.d( "ViewModel", "updated history for $currencyId: ${newHistory}")
                 }
+
 
             }
         }
@@ -63,7 +66,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             currenciesRepository.getCurrencies().collect { x ->
                 _currencies.update { x }
-                Log.d("HomeViewModel", x.toString())
+                Log.d("HomeViewModel", "updated tickers ${x.toString()}")
             }
 
         }

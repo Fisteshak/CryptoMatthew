@@ -28,6 +28,9 @@ fun CryptoMatthewApp(
     ) {
     CryptoMatthewTheme {
         val currencies by viewModel.currencies.collectAsStateWithLifecycle()
+        val histories by viewModel.histories.collectAsStateWithLifecycle()
+
+
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color =  MaterialTheme.colorScheme.background) {
             NavHost(
@@ -51,10 +54,10 @@ fun CryptoMatthewApp(
                         viewModel.updateCurrencyHistory(currencyId)
 
                         CurrencyInfoScreen(
-                            currencies.find {
-                            it.id == currencyId
-                        }!!)
+                            currencies.find { it.id == currencyId }!!,
+                            histories.find { it.currencyId == currencyId },
 
+                        )
                     }
                     else
                         Log.d("NavHost", "CryptoMatthewApp: navigation without id")

@@ -5,6 +5,7 @@ import com.example.cryptomatthew.data.local.OfflineCurrenciesRepository
 import com.example.cryptomatthew.data.local.entities.TickEntity
 import com.example.cryptomatthew.data.network.NetworkCurrenciesRepository
 import com.example.cryptomatthew.models.Currency
+import com.example.cryptomatthew.models.History
 import com.example.cryptomatthew.models.Tick
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -44,6 +45,8 @@ class CurrenciesRepository @Inject constructor(
         }
     }
 
+
+    // retrieves history from network and stores in DB
     suspend fun updateCurrencyHistory(currencyId: String) {
         val response = networkCurrenciesRepository.getTickerHistory(currencyId)
         if (response == null) return;
@@ -56,14 +59,16 @@ class CurrenciesRepository @Inject constructor(
 
     }
 
-    suspend fun getCurrencyHistory(currencyId: String): List<Tick> {
+    // gets history from DB
+    suspend fun getCurrencyHistory(currencyId: String): History {
         val ticks = offlineCurrenciesRepository.getCurrencyHistory(currencyId)
-        return ticks.map {
-            Tick(it)
-        }
+
+        return History(
+            currencyId,
+            ticks.map {Tick(it)}
+        )
 
     }
-
 
 
 

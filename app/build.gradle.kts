@@ -8,6 +8,7 @@ plugins {
     id("androidx.room")
 }
 
+
 android {
     namespace = "com.example.cryptomatthew"
     compileSdk = 34
@@ -123,5 +124,9 @@ dependencies {
     implementation("com.github.madrapps:plot:0.1.2")
     // date tools
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+    // charts attempt 2
+    implementation("io.github.thechance101:chart:Beta-0.0.5")
 
 }
+
+
