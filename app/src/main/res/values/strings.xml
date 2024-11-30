@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CryptoMatthew</string>
+    <string name="No_data">Нет данных</string>
 </resources>

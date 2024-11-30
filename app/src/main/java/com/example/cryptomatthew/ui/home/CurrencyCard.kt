@@ -1,6 +1,7 @@
 package com.example.cryptomatthew.ui.home
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,23 +25,29 @@ fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit
         modifier
             .fillMaxWidth()
             .height(40.dp)
-            .padding(4.dp)
+            .padding(vertical = 4.dp)
             .clickable(onClick = {
                 onCurrencyClick(currency)
             }),
         verticalAlignment = Alignment.CenterVertically,
 
     ) {
-        Text(
-            text = currency.rank.toString(),
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(end = 2.dp).width(35.dp)
+        ) {
 
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(4.dp)
-        )
+            Text(
+                text = currency.rank.toString(),
+
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+            )
+        }
         Text(
             text = currency.name,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 12.dp)
+            modifier = Modifier.padding(start = 6.dp)
         )
         Spacer(modifier = Modifier
             .width(20.dp)
@@ -48,7 +55,7 @@ fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit
         Text(
             text = currency.finsUSD?.price?.formatLong() ?: "",
             style = MaterialTheme.typography.titleMedium,
-            modifier = modifier.padding(end = 16.dp)
+            modifier = Modifier
 
         )
 
