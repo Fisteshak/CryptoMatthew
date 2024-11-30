@@ -2,6 +2,7 @@ package com.example.cryptomatthew.data.local.entities
 
 import androidx.room.Entity
 import com.example.cryptomatthew.data.network.models.NetworkQuote
+import com.example.cryptomatthew.data.utils.parseRFC3339ToLongSeconds
 
 @Entity(tableName = "financials", primaryKeys = ["currencyId", "priceCurrency"])
 data class FinancialsEntity(
@@ -18,6 +19,9 @@ data class FinancialsEntity(
     val percentChange7d: Double? = null,
     val percentChange30d: Double? = null,
     val percentChange1y: Double? = null,
+    val athPrice: Double? = null,          //ath = all time high
+    val athDate: Long? = null,
+    val percentFromPriceAth: Double? = null
 ) {
     constructor(q: NetworkQuote, currencyId: String, priceCurrency: String) : this(
         currencyId,
@@ -32,6 +36,9 @@ data class FinancialsEntity(
         q.percent_change_24h,
         q.percent_change_7d,
         q.percent_change_30d,
-        q.percent_change_1y
+        q.percent_change_1y,
+        q.ath_price,
+        parseRFC3339ToLongSeconds(q.ath_date),
+        q.percent_from_price_ath
     )
 }

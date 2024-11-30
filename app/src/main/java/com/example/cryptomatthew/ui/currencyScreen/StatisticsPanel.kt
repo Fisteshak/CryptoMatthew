@@ -18,8 +18,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.cryptomatthew.R
 import com.example.cryptomatthew.models.Change
 import com.example.cryptomatthew.models.Financials
 
@@ -29,11 +31,15 @@ fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifie
         Column {
             Text("Статистика", modifier = Modifier.align(Alignment.CenterHorizontally))
             Row() {
-                StatisticsElement("Цена", financials.price.formatShort(), modifier = Modifier.fillMaxWidth(0.5f))
-                StatisticsElement("Капитализация", financials.marketCap.formatShort(), modifier = Modifier.fillMaxWidth(1f))
+                StatisticsElement("Цена", financials.price.formatShort() ?: stringResource(R.string.No_data), modifier = Modifier.fillMaxWidth(0.5f))
+                StatisticsElement("Капитализация", financials.marketCap.formatShort() ?: stringResource(R.string.No_data), modifier = Modifier.fillMaxWidth(1f))
             }
             Row {
-                StatisticsElement("Обьем 24 ч.", financials.volume24h.formatShort(), modifier = Modifier.fillMaxWidth(0.5f))
+                StatisticsElement(
+                    "Обьем 24 ч.",
+                    financials.volume24h.formatShort() ?: stringResource(R.string.No_data),
+                    modifier = Modifier.fillMaxWidth(0.5f)
+                )
                 ChangeElement(
                     "Изменение обьема 24 ч.",
                     financials.volume24hChange24h,
@@ -76,6 +82,19 @@ fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifie
                 ChangeElement(
                     "Изменение цены 1 ч.",
                     financials.percentChange1h,
+                    modifier = Modifier.fillMaxWidth(1f)
+                )
+            }
+            Row {
+                StatisticsElement(
+                    "Макс. цена",
+                    financials.athPrice.formatShort() ?: stringResource(R.string.No_data),
+                    modifier = Modifier.fillMaxWidth(0.5f)
+                )
+
+                ChangeElement(
+                    "Изменение цены с макс.",
+                    financials.percentFromPriceAth,
                     modifier = Modifier.fillMaxWidth(1f)
                 )
             }
@@ -150,7 +169,7 @@ fun ChangeElement(header: String, change: Change, modifier: Modifier = Modifier)
                     .align(Alignment.CenterVertically)
                     .padding(horizontal = 4.dp)
             )
-            Text(change.formatSignless(), style = MaterialTheme.typography.bodyMedium)
+            Text(change.formatSignless() ?: stringResource(R.string.No_data), style = MaterialTheme.typography.bodyMedium)
 
         }
     }

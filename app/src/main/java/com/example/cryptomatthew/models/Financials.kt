@@ -2,6 +2,8 @@ package com.example.cryptomatthew.models
 
 import android.util.Log
 import com.example.cryptomatthew.data.local.entities.FinancialsEntity
+import com.example.cryptomatthew.data.utils.parseLongSecondsToLocalDate
+import kotlinx.datetime.LocalDate
 import java.util.Locale
 import kotlin.math.abs
 
@@ -17,7 +19,10 @@ data class Financials(
     val percentChange7d: Change,
     val percentChange30d: Change,
     val percentChange1y: Change,
-) {
+    val athPrice: Price,
+    val athDate: LocalDate?,
+    val percentFromPriceAth: Change
+    ) {
     constructor(f: FinancialsEntity, currencySymbol: String) : this(
         Price(f.price, currencySymbol),
         Price(f.volume24h, currencySymbol),
@@ -29,7 +34,10 @@ data class Financials(
         Change(f.percentChange24h),
         Change(f.percentChange7d),
         Change(f.percentChange30d),
-        Change(f.percentChange1y)
+        Change(f.percentChange1y),
+        Price(f.athPrice, currencySymbol),
+        parseLongSecondsToLocalDate(f.athDate!!), //TODO should probably change that
+        Change(f.percentFromPriceAth)
     )
 }
 
@@ -37,9 +45,19 @@ data class Price(
     val value: Double?,
     val currencySymbol: String
 ) {
-    fun formatShort(): String {
 
-        if (value == null) return "Нет данных"
+    /**
+     * Formats a numeric value into a shortened string representation with appropriate suffixes.
+     *
+     * This function converts large numeric values into a more readable format by appending
+     * suffixes like "K" for thousands, "M" for millions, "B" for billions, and "T" for trillions.
+     * It includes the currency symbol and formats the number using ' ' as separator for every 3 numbers and ',' as separator for fractional part
+     *
+     * @return A formatted string representing the value with a suffix, or `null` if the value is null.
+     */
+    fun formatShort(): String? {
+
+        if (value == null) return null
 
         val units = listOf(
             "T" to 1_000_000_000_000.0,
@@ -57,23 +75,22 @@ data class Price(
         return String.format(Locale.FRANCE, "%s%.4f", currencySymbol, value)
     }
 
-    fun formatLong(): String {
-        if (value == null) return "Нет данных"
-
+    fun formatLong(): String? {
+        if (value == null) return null
         return String.format(Locale.FRANCE, "%s%,.2f", currencySymbol, value)
     }
 
 }
 
 data class Change(val value: Double?) {
-    fun formatFull(): String {
-        if (value == null) return "Нет данных"
-        else return String.format(Locale.FRANCE, "%.1f%%", value )
+    fun formatFull(): String? {
+        if (value == null) return null;
+        return String.format(Locale.FRANCE, "%.1f%%", value)
     }
     
-    fun formatSignless(): String {
-        if (value == null) return "Нет данных"
-        else return String.format(Locale.FRANCE, "%.1f%%", abs(value))
+    fun formatSignless(): String? {
+        if (value == null) return null;
+        return String.format(Locale.FRANCE, "%.1f%%", abs(value))
     }
     
     

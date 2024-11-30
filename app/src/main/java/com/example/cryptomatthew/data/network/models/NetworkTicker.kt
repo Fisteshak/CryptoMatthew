@@ -12,7 +12,7 @@ data class NetworkTicker(
     val beta_value: Double?,
     val first_data_at: String?,
     val last_updated: String?,
-    val quotes: Network
+    val quotes: NetworkQuotes
 )
 
 
