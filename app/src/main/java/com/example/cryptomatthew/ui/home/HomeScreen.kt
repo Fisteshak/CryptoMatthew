@@ -26,7 +26,8 @@ import com.example.cryptomatthew.models.Currency
 fun HomeScreen(
     currencies: List<Currency>,
     modifier: Modifier = Modifier,
-    onCurrencyClick: (currency: Currency) -> Unit
+    onCurrencyClick: (currency: Currency) -> Unit,
+    onFavoriteIconClick: (currencyId: String) -> Unit
 ) {
 
     Scaffold(
@@ -47,7 +48,9 @@ fun HomeScreen(
             Row(modifier = Modifier.padding(vertical = 3.dp)) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(horizontal = 2.dp).width(35.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 2.dp)
+                        .width(35.dp)
                 ) {
                     Text(
                         text = "#",
@@ -71,9 +74,17 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.padding(end = 16.dp)
                 )
+                Spacer(modifier = Modifier
+                    .width(40.dp)
+                    .padding(start = 10.dp))
             }
 
-            CurrencyList(currencies, Modifier.padding(start = 4.dp, end = 16.dp), onCurrencyClick)
+            CurrencyList(
+                currencies,
+                Modifier.padding(start = 4.dp, end = 16.dp),
+                onCurrencyClick,
+                onFavoriteIconClick
+            )
         }
     }
 }
@@ -87,15 +98,16 @@ fun HomeScreen(
 fun CurrencyList(
     currencies: List<Currency>,
     modifier: Modifier = Modifier,
-    onCurrencyClick: (currency: Currency) -> Unit
+    onCurrencyClick: (currency: Currency) -> Unit,
+    onFavoriteIconClick: (currencyId: String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
 
-        items(currencies.size) {
-                index -> CryptoCard(currencies[index], onCurrencyClick)
+        items(currencies.size) { index ->
+            CryptoCard(currencies[index], onCurrencyClick, onFavoriteIconClick)
         }
     }
 }

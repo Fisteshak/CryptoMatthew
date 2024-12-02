@@ -1,5 +1,6 @@
 package com.example.cryptomatthew.ui.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,14 +14,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.cryptomatthew.R
 import com.example.cryptomatthew.models.Currency
 
 @Composable
-fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit, modifier: Modifier = Modifier) {
-
-
+fun CryptoCard(
+    currency: Currency,
+    onCurrencyClick: (currency: Currency) -> Unit,
+    onFavoriteIconClick: (currencyId: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier
             .fillMaxWidth()
@@ -34,7 +40,9 @@ fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(end = 2.dp).width(35.dp)
+            modifier = Modifier
+                .padding(end = 2.dp)
+                .width(35.dp)
         ) {
 
             Text(
@@ -52,14 +60,31 @@ fun CryptoCard(currency: Currency, onCurrencyClick: (currency: Currency) -> Unit
         Spacer(modifier = Modifier
             .width(20.dp)
             .weight(1f))
+
+
         Text(
             text = currency.finsUSD?.price?.formatLong() ?: "",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
-
         )
 
+        Box(
+            modifier = Modifier
+                .width(40.dp)
+                .padding(start = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
 
+            //TODO change content description
+            Image(
+                painter = painterResource(
+                    id = if (currency.isFavorite) R.drawable.favorite_filled else R.drawable.favorite_empty,
+
+                    ),
+                contentDescription = "is favorite",
+                modifier = Modifier.clickable { onFavoriteIconClick(currency.id) }
+            )
+        }
     }
 }
 

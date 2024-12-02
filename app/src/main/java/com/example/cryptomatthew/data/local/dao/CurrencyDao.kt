@@ -17,10 +17,14 @@ interface CurrencyDao {
 
 
     @Query("SELECT * FROM currency ORDER BY rank ASC")
-    fun getAllCurrencies(): Flow<List<CurrencyEntity>>
+    fun getAllCurrenciesFlow(): Flow<List<CurrencyEntity>>
+
+    @Query("SELECT * FROM currency ORDER BY rank ASC")
+    suspend fun getAllCurrencies(): List<CurrencyEntity>
 
     @Query("SELECT * FROM financials")
-    fun getAllFinancials(): Flow<List<FinancialsEntity>>
+    fun getAllFinancialsFlow(): Flow<List<FinancialsEntity>>
+
 
     @Query("SELECT * FROM tick WHERE currencyId = :currencyId ORDER BY timestampSeconds ASC")
     suspend fun getCurrencyTicks(currencyId: String): List<TickEntity>
@@ -40,10 +44,12 @@ interface CurrencyDao {
     }
 
     @Transaction
-    suspend fun insertCurrenciesData(tickers: List<NetworkTicker>) {
+    suspend fun insertCurrenciesData(tickers: List<Pair<NetworkTicker, Boolean>>) {
         for (ticker in tickers) {
             val (currencyEntity, financialsEntityUSD, financialsEntityRUB) =
-                tickerToCurrencyAndFinancialsEntity(ticker)
+                tickerToCurrencyAndFinancialsEntity(ticker.first)
+
+            currencyEntity.isFavorite = ticker.second
 
             insertCurrencyEntity(currencyEntity)
             insertFinancialsEntity(financialsEntityUSD)
@@ -63,5 +69,6 @@ interface CurrencyDao {
     @Query("DELETE FROM financials")
     suspend fun deleteAllFinancialEntities()
 
-
+    @Query("UPDATE currency SET isFavorite = :isFavorite WHERE id = :currencyId")
+    suspend fun updateCurrencyIsFavorite(currencyId: String, isFavorite: Boolean)
 }

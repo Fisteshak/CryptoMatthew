@@ -30,10 +30,13 @@ fun CurrencyInfoScreen(currency: Currency, history: History?, modifier: Modifier
                 Text(currency.finsRUB?.price?.formatLong() ?: stringResource(R.string.No_data), style = MaterialTheme.typography.titleLarge)
             }
 
-            HistoryPlotPlaceholder(history?.ticks)
+            HistoryPlotPlaceholder(
+                history?.ticks,
+                modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)
+            )
 
 
-            StatisticsPanel(currency.finsUSD!!, "$")
+            StatisticsPanel(currency.finsUSD!!)
 
 
         }

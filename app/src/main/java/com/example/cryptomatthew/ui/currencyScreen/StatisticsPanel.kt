@@ -26,15 +26,29 @@ import com.example.cryptomatthew.models.Change
 import com.example.cryptomatthew.models.Financials
 
 @Composable
-fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifier = Modifier) {
+fun StatisticsPanel(financials: Financials, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         Column {
-            Text("Статистика", modifier = Modifier.align(Alignment.CenterHorizontally))
-            Row() {
-                StatisticsElement("Цена", financials.price.formatShort() ?: stringResource(R.string.No_data), modifier = Modifier.fillMaxWidth(0.5f))
-                StatisticsElement("Капитализация", financials.marketCap.formatShort() ?: stringResource(R.string.No_data), modifier = Modifier.fillMaxWidth(1f))
+            Text(
+                "Статистика",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 4.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+                StatisticsElement(
+                    "Цена",
+                    financials.price.formatShort() ?: stringResource(R.string.No_data),
+                    modifier = Modifier.fillMaxWidth(0.5f)
+                )
+                StatisticsElement(
+                    "Капитализация",
+                    financials.marketCap.formatShort() ?: stringResource(R.string.No_data),
+                    modifier = Modifier.fillMaxWidth(1f)
+                )
             }
-            Row {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 StatisticsElement(
                     "Обьем 24 ч.",
                     financials.volume24h.formatShort() ?: stringResource(R.string.No_data),
@@ -46,7 +60,7 @@ fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifie
                     modifier = Modifier.fillMaxWidth(1f)
                 )
             }
-            Row {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 ChangeElement(
                     "Изменение цены 1 г.",
                     financials.percentChange1y,
@@ -59,7 +73,8 @@ fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifie
                     modifier = Modifier.fillMaxWidth(1f)
                 )
             }
-            Row {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+
                 ChangeElement(
                     "Изменение цены 7 д.",
                     financials.percentChange7d,
@@ -72,9 +87,10 @@ fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifie
                     modifier = Modifier.fillMaxWidth(1f)
                 )
             }
-            Row {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+
                 ChangeElement(
-                    "Изменение цены 12 д.",
+                    "Изменение цены 12 ч.",
                     financials.percentChange12h,
                     modifier = Modifier.fillMaxWidth(0.5f)
                 )
@@ -85,7 +101,8 @@ fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifie
                     modifier = Modifier.fillMaxWidth(1f)
                 )
             }
-            Row {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+
                 StatisticsElement(
                     "Макс. цена",
                     financials.athPrice.formatShort() ?: stringResource(R.string.No_data),
@@ -97,6 +114,16 @@ fun StatisticsPanel(financials: Financials, finSymbol: String, modifier: Modifie
                     financials.percentFromPriceAth,
                     modifier = Modifier.fillMaxWidth(1f)
                 )
+            }
+
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+
+                StatisticsElement(
+                    "Дата макс. цены",
+                    financials.athDate?.toString() ?: stringResource(R.string.No_data),
+                    modifier = Modifier.fillMaxWidth(0.5f)
+                )
+
             }
 
 
@@ -128,28 +155,34 @@ fun ChangeArrow(dir: Double) {
         .drawBehind {
             if (dir != 0.0) {
 
-                val path = androidx.compose.ui.graphics.Path().apply {
-                    val triangleSide = size.width
-                    val height = triangleSide / 2f
-                    val offset = height / 2f
-                    if (dir > 0) {
-                        moveTo(triangleSide / 2f, offset)
-                        lineTo(0f, height + offset)
-                        lineTo(triangleSide, height + offset)
-                    } else {
-                        moveTo(triangleSide / 2f, height + offset)
-                        lineTo(0f, offset)
-                        lineTo(triangleSide, offset)
+                val path = androidx.compose.ui.graphics
+                    .Path()
+                    .apply {
+                        val triangleSide = size.width
+                        val height = triangleSide / 2f
+                        val offset = height / 2f
+                        if (dir > 0) {
+                            moveTo(triangleSide / 2f, offset)
+                            lineTo(0f, height + offset)
+                            lineTo(triangleSide, height + offset)
+                        } else {
+                            moveTo(triangleSide / 2f, height + offset)
+                            lineTo(0f, offset)
+                            lineTo(triangleSide, offset)
+                        }
+                        close()
                     }
-                    close()
-                }
                 drawPath(path, color)
             } else {
                 val height = 2f
                 val width = size.width
                 val margin = width / 8
                 val offset = (width - height) / 2
-                drawRect(color, topLeft = Offset(margin, offset), size = Size(width - 2*margin, height))
+                drawRect(
+                    color,
+                    topLeft = Offset(margin, offset),
+                    size = Size(width - 2 * margin, height)
+                )
             }
 
         }

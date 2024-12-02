@@ -39,9 +39,14 @@ fun CryptoMatthewApp(
                 modifier = Modifier
             ) {
                 composable(route = Destinations.Home.name) {
-                    HomeScreen(currencies, onCurrencyClick = {
-                        navController.navigate("${Destinations.CurrencyInfo.name}/${it.id}")
-                    })
+                    HomeScreen(currencies,
+                        onCurrencyClick = {
+                            navController.navigate("${Destinations.CurrencyInfo.name}/${it.id}")
+                        },
+                        onFavoriteIconClick = {
+                            viewModel.toggleFavorite(currencyId = it)
+                        }
+                    )
                 }
                 composable(
                     route = "${Destinations.CurrencyInfo.name}/{currency_id}",
@@ -56,7 +61,6 @@ fun CryptoMatthewApp(
                         CurrencyInfoScreen(
                             currencies.find { it.id == currencyId }!!,
                             histories.find { it.currencyId == currencyId },
-
                         )
                     }
                     else

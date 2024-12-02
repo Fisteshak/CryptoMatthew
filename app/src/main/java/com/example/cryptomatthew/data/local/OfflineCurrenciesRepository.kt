@@ -6,24 +6,33 @@ import com.example.cryptomatthew.data.local.entities.FinancialsEntity
 import com.example.cryptomatthew.data.local.entities.TickEntity
 import com.example.cryptomatthew.data.network.models.NetworkTicker
 import com.example.cryptomatthew.models.Currency
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: CurrencyDao) {
-    val currencies =
-        currencyDao.getAllCurrencies()
-            .combine(currencyDao.getAllFinancials()) {
-                    currList: List<CurrencyEntity>, finList: List<FinancialsEntity> ->
-                currList.map { currency ->
-                    Currency(
-                        currency,
-                        finList.find { it.currencyId == currency.id && it.priceCurrency == "USD" },
-                        finList.find { it.currencyId == currency.id && it.priceCurrency == "RUB" },
-                    )
+    val currenciesFlow: Flow<List<Currency>>
+        get() {
+            return currencyDao.getAllCurrenciesFlow()
+                .combine(currencyDao.getAllFinancialsFlow()) { currList: List<CurrencyEntity>, finList: List<FinancialsEntity> ->
+                    currList.map { currency ->
+                        Currency(
+                            currency,
+                            finList.find { it.currencyId == currency.id && it.priceCurrency == "USD" },
+                            finList.find { it.currencyId == currency.id && it.priceCurrency == "RUB" },
+                        )
+                    }
                 }
-            }
 
-    suspend fun insertCurrenciesData(tickers: List<NetworkTicker>) {
+        }
+
+    suspend fun getCurrencies(): List<CurrencyEntity> {
+        return currencyDao.getAllCurrencies()
+    }
+
+
+    // takes List of Pairs, where first value is ticker get from API and second value is isFavorite for this ticker
+    suspend fun insertCurrenciesData(tickers: List<Pair<NetworkTicker, Boolean>>) {
         currencyDao.insertCurrenciesData(tickers)
     }
 
@@ -45,5 +54,9 @@ class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: C
 
     suspend fun clearDB() {
         currencyDao.clearDB()
+    }
+
+    suspend fun updateCurrencyIsFavorite(currencyId: String, isFavorite: Boolean) {
+        currencyDao.updateCurrencyIsFavorite(currencyId, isFavorite)
     }
 }

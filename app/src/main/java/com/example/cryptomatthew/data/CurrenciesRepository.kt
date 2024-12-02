@@ -7,11 +7,9 @@ import com.example.cryptomatthew.data.network.NetworkCurrenciesRepository
 import com.example.cryptomatthew.models.Currency
 import com.example.cryptomatthew.models.History
 import com.example.cryptomatthew.models.Tick
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 class CurrenciesRepository @Inject constructor(
     private val networkCurrenciesRepository: NetworkCurrenciesRepository,
@@ -19,9 +17,8 @@ class CurrenciesRepository @Inject constructor(
 ) {
 
 
-    @OptIn(FlowPreview::class)
     fun getCurrencies(): Flow<List<Currency>> {
-        return offlineCurrenciesRepository.currencies.debounce(3.seconds)
+        return offlineCurrenciesRepository.currenciesFlow.filter { it.isNotEmpty() && it[0].finsUSD != null }
     }
 
 
@@ -29,6 +26,11 @@ class CurrenciesRepository @Inject constructor(
         offlineCurrenciesRepository.clearDB()
     }
 
+
+    //TODO this synchronization is ok (but not ideal) in terms of speed,
+    // but i really don't like that i need to pass Pair<Ticker, Boolean> to insert function
+    // that will work for now, but i should fix this in future
+    // maybe some intermediate class between NetworkTicker and CurrencyEntity (or add isFavorite to NetworkTicker?)
     suspend fun updateCurrencies() {
         networkCurrenciesRepository.latestTickers.collect {
             val tickers = it.body()
@@ -36,9 +38,18 @@ class CurrenciesRepository @Inject constructor(
 
             if (it.code() == 200 && tickers != null) {
 
+                val current = offlineCurrenciesRepository.getCurrencies()
+
+
+                val new = tickers.map { newTicker ->
+                    Pair(newTicker, current.find { it.id == newTicker.id }?.isFavorite ?: false)
+                }
+
                 clearDB()
 
-                offlineCurrenciesRepository.insertCurrenciesData(tickers)
+                offlineCurrenciesRepository.insertCurrenciesData(new)
+
+
             } else {
                 Log.d("Currencies Repo", "error while updating tickers: ${it.code()}, ${it.message()}")
             }
@@ -70,6 +81,8 @@ class CurrenciesRepository @Inject constructor(
 
     }
 
-
+    suspend fun setIsFavorite(currencyId: String, isFavorite: Boolean) {
+        offlineCurrenciesRepository.updateCurrencyIsFavorite(currencyId, isFavorite)
+    }
 
 }

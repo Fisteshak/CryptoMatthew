@@ -13,7 +13,7 @@ import com.example.cryptomatthew.data.local.entities.TickEntity
 
 @Database(
     entities = [CurrencyEntity::class, FinancialsEntity::class, TickEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = true,
     autoMigrations = [
         AutoMigration (
@@ -31,6 +31,10 @@ import com.example.cryptomatthew.data.local.entities.TickEntity
         AutoMigration (
             from = 4, to = 5,
             spec = AppDatabase.AutoMigration4To5::class
+        ),
+        AutoMigration(
+            from = 5, to = 6,
+            spec = AppDatabase.AutoMigration5To6::class
         )
     ]
 )
@@ -44,6 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
 
     @DeleteColumn("financials", "athDate")
     class AutoMigration4To5 : AutoMigrationSpec
+
+    class AutoMigration5To6 : AutoMigrationSpec
 
 
     abstract fun currencyDao(): CurrencyDao

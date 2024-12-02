@@ -36,7 +36,7 @@ data class Financials(
         Change(f.percentChange30d),
         Change(f.percentChange1y),
         Price(f.athPrice, currencySymbol),
-        parseLongSecondsToLocalDate(f.athDate!!), //TODO should probably change that
+        parseLongSecondsToLocalDate(f.athDate!!), //TODO should probably handle null case
         Change(f.percentFromPriceAth)
     )
 }

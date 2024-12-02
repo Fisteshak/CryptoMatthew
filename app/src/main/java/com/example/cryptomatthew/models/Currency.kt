@@ -10,6 +10,7 @@ data class Currency(
     val symbol: String,
     var finsUSD: Financials? = null,
     var finsRUB: Financials? = null,
+    var isFavorite: Boolean
 ) {
 
     constructor(currencyEntity: CurrencyEntity, finsUSD: FinancialsEntity? = null, finsRUB: FinancialsEntity? = null) : this(
@@ -17,6 +18,7 @@ data class Currency(
         currencyEntity.rank,
         currencyEntity.name,
         currencyEntity.symbol,
+        isFavorite = currencyEntity.isFavorite
     ) {
         if (finsUSD != null) this.finsUSD = Financials(finsUSD, "$")
         if (finsRUB != null) this.finsRUB = Financials(finsRUB, "₽")

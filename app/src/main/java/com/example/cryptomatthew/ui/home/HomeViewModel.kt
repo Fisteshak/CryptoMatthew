@@ -72,6 +72,24 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun toggleFavorite(currencyId: String) {
+
+        viewModelScope.launch {
+            val x = _currencies.value.find { it.id == currencyId }
+            if (x != null) {
+                //_currencies.update { it.forEach { x -> x.isFavorite = true }; it}
+                //x.isFavorite = !x.isFavorite
+                currenciesRepository.setIsFavorite(currencyId, !x.isFavorite)
+            } else {
+                Log.d(
+                    "HomeViewModel",
+                    "setIsFavorite: can't find currency with id = $currencyId"
+                )
+            }
+        }
+
+
+    }
 
 
 
