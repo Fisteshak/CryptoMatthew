@@ -86,7 +86,9 @@ fun HistoryPlot2(history: List<Tick>, modifier: Modifier = Modifier) {
     )
 
     LineChart(
-        modifier = Modifier.fillMaxWidth().height(250.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp),
         linesParameters = lineParameters,
         isGrid = true,
         gridColor = Color.Blue,
@@ -118,6 +120,7 @@ fun HistoryPlot2(history: List<Tick>, modifier: Modifier = Modifier) {
 
 @Composable
 fun HistoryPlotPlaceholder(history: List<Tick>?, text: String = ":((", modifier: Modifier = Modifier) {
+
     Box(
         modifier = modifier
             .fillMaxWidth()
