@@ -12,7 +12,7 @@ import com.example.cryptomatthew.models.Currency
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun FavoritesScreen(
     currencies: List<Currency>,
     modifier: Modifier = Modifier,
     onCurrencyClick: (currency: Currency) -> Unit,
@@ -27,7 +27,7 @@ fun HomeScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Монеты")
+                    Text("Избранное")
                 }
             )
         }
@@ -35,3 +35,4 @@ fun HomeScreen(
         CurrenciesSearchPanel(innerPadding, currencies, onCurrencyClick, onFavoriteIconClick)
     }
 }
+
