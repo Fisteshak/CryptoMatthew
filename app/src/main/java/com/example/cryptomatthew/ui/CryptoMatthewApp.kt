@@ -36,14 +36,14 @@ fun CryptoMatthewApp(
     CryptoMatthewTheme {
         val currencies by viewModel.currencies.collectAsStateWithLifecycle()
         val histories by viewModel.histories.collectAsStateWithLifecycle()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
         Scaffold(
             bottomBar = {
                 BottomNavigation(
                     backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.secondary
                 ) {
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentDestination = navBackStackEntry?.destination
                     topLevelRoutes.forEach { topLevelRoute ->
                         BottomNavigationItem(
                             icon = {
@@ -119,7 +119,9 @@ fun CryptoMatthewApp(
                     else
                         Log.d("NavHost", "CryptoMatthewApp: navigation without id")
                 }
-
+                composable(route = Routes.Scanner.name) {
+                    ScannerScreen()
+                }
 
             }
 

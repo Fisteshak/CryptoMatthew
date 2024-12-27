@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">CryptoMatthew</string>
     <string name="No_data">Нет данных</string>
+    <string name="parol">1234567789</string>
 </resources>
