@@ -58,8 +58,12 @@ class CurrenciesRepository @Inject constructor(
 
 
     // retrieves history from network and stores in DB
-    suspend fun updateCurrencyHistory(currencyId: String) {
-        val response = networkCurrenciesRepository.getTickerHistory(currencyId)
+    suspend fun updateCurrencyHistory(currencyId: String, startDate: String) {
+        val response = networkCurrenciesRepository.getWeeklyTickerHistory(currencyId, startDate)
+        if (response != null) {
+            Log.d("NetworkRepository", "history for $currencyId: ${response.body()}")
+        }
+        // TODO handle null case
         if (response == null) return;
         val ticks = response.body()
         if (response.code() == 200 && ticks != null) {

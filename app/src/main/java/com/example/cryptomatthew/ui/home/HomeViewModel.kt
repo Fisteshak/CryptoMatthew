@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +38,11 @@ class HomeViewModel @Inject constructor(
             Log.d( "ViewModel", "starting to update history for $currencyId")
 
             with (Dispatchers.IO) {
-                currenciesRepository.updateCurrencyHistory(currencyId)
+
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val date = LocalDateTime.now().minusYears(1).plusDays(2).format(formatter);
+
+                currenciesRepository.updateCurrencyHistory(currencyId, date)
                 val history = _histories.value.find { it.currencyId == currencyId }
                 val newHistory = currenciesRepository.getCurrencyHistory(currencyId)
 

@@ -1,6 +1,5 @@
 package com.example.cryptomatthew.models
 
-import android.util.Log
 import com.example.cryptomatthew.data.local.entities.FinancialsEntity
 import com.example.cryptomatthew.data.utils.parseLongSecondsToLocalDate
 import kotlinx.datetime.LocalDate
@@ -68,7 +67,6 @@ data class Price(
         )
         for ((suffix, threshold) in units) {
             if (value >= threshold) {
-                Log.d("PriceFormatShort", "$currencySymbol ${value / threshold} $suffix" )
                 return String.format(Locale.FRANCE, "%s%.2f %s", currencySymbol, value / threshold, suffix)
             }
         }

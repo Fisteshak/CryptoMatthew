@@ -122,11 +122,12 @@ dependencies {
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
     runtimeOnly("androidx.navigation:navigation-common:$nav_version")
-    // charts
-    implementation("com.github.madrapps:plot:0.1.2")
+
     // date tools
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
 
+    //material (not material3!) for bottom navigation
+    implementation("androidx.compose.material:material:1.7.6")
 
     implementation(kotlin("script-runtime"))
 
