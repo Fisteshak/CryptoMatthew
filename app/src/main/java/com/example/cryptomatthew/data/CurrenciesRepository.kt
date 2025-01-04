@@ -80,7 +80,7 @@ class CurrenciesRepository @Inject constructor(
 
         return History(
             currencyId,
-            ticks.map {Tick(it)}
+            ticks.map {Tick(it, "$")}
         )
 
     }

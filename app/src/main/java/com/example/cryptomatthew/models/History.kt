@@ -9,17 +9,18 @@ data class History(
     val ticks: List<Tick>,
 )
 
+// TODO store price, volume and marketCap in Price class
 data class Tick(
-    val price: Double,
+    val price: Price,
     val timestamp: LocalDate,
-    val volume24h: Double,
-    val marketCap: Double,
+    val volume24h: Price,
+    val marketCap: Price,
 ) {
-    constructor(tickEntity: TickEntity) : this(
-        tickEntity.price,
+    constructor(tickEntity: TickEntity, currencySymbol: String) : this(
+        Price(tickEntity.price, currencySymbol),
         parseLongSecondsToLocalDate(tickEntity.timestampSeconds),
-        tickEntity.volume24h,
-        tickEntity.marketCap
+        Price(tickEntity.volume24h, currencySymbol),
+        Price(tickEntity.marketCap, currencySymbol),
     )
 }
 

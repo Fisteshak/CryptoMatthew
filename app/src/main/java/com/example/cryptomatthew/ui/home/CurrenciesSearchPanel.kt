@@ -50,6 +50,7 @@ fun CurrenciesSearchPanel(
             currencies
                 .filter {
                     it.name.lowercase(Locale.ROOT).contains(searchText.lowercase(Locale.ROOT))
+                            || it.symbol.lowercase(Locale.ROOT).contains(searchText.lowercase(Locale.ROOT))
                 },
             Modifier.padding(start = 4.dp, end = 16.dp),
             onCurrencyClick,

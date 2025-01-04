@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cryptomatthew.R
 import com.example.cryptomatthew.models.Currency
@@ -53,7 +53,7 @@ fun CryptoCard(
             )
         }
         Text(
-            text = currency.name,
+            text = currency.symbol,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(start = 6.dp)
         )
@@ -70,7 +70,7 @@ fun CryptoCard(
 
         Box(
             modifier = Modifier
-                .width(40.dp)
+                .requiredWidth(40.dp)
                 .padding(start = 10.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -78,9 +78,8 @@ fun CryptoCard(
             //TODO change content description
             Image(
                 painter = painterResource(
-                    id = if (currency.isFavorite) R.drawable.favorite_filled else R.drawable.favorite_empty,
-
-                    ),
+                    id = if (currency.isFavorite) R.drawable.favorite_filled else R.drawable.favorite_empty
+                ),
                 contentDescription = "is favorite",
                 modifier = Modifier.clickable { onFavoriteIconClick(currency.id) }
             )
@@ -88,8 +87,4 @@ fun CryptoCard(
     }
 }
 
-@Composable
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
-fun CryptoCardPreview() {
-    //CryptoCard(Currency(, 1, "Bitcoin", "BTC", Financials(1000000.0)))
-}
+

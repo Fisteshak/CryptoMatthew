@@ -91,9 +91,9 @@ fun CurrencyLineGraph(
                 val yPos = size.height - ((value - adjustedMin) / range * size.height).toFloat()
 
                 var valueDiff = maxValue - minValue;
-                var i = 0;
+                var digitNum = 0;
                 while (valueDiff < 1f) {
-                    i++
+                    digitNum++
                     valueDiff *= 10
                 }
 
@@ -101,7 +101,7 @@ fun CurrencyLineGraph(
 
                 it.nativeCanvas.drawText(
                     String.format(
-                        Locale.FRENCH, "%.${i+2}f", value),
+                        Locale.FRENCH, "%.${digitNum+2}f", value),
                     10f,
                     yPos-4,
                     yLabelPaint

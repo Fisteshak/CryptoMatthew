@@ -75,8 +75,17 @@ data class Price(
 
     fun formatLong(): String? {
         if (value == null) return null
-        return String.format(Locale.FRANCE, "%s%,.2f", currencySymbol, value)
+        var n = 0;
+        var x = value;
+        while (x < 1) {
+            n++;
+            x *= 10;
+        }
+
+        return String.format(Locale.FRANCE, "%s%,.${n+2}f", currencySymbol, value)
     }
+
+
 
 }
 
