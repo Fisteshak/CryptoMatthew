@@ -1,11 +1,15 @@
 package com.example.cryptomatthew.ui.home
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptomatthew.data.CurrenciesRepository
 import com.example.cryptomatthew.models.Currency
 import com.example.cryptomatthew.models.History
+import com.example.cryptomatthew.ui.ConnectionChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +23,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val currenciesRepository: CurrenciesRepository
-)  : ViewModel() {
+    private val currenciesRepository: CurrenciesRepository,
+    private val connectionChecker: ConnectionChecker
+) : ViewModel() {
 
     private val _currencies = MutableStateFlow<List<Currency>>(emptyList())
     val currencies: StateFlow<List<Currency>> = _currencies.asStateFlow()
@@ -28,16 +33,32 @@ class HomeViewModel @Inject constructor(
     private val _histories = MutableStateFlow<MutableList<History>>(mutableListOf())
     val histories: StateFlow<List<History>> = _histories.asStateFlow()
 
+    var isShowingNoConnectionBar: Boolean by mutableStateOf(false)
+        private set
+
+    private fun showNoConnectionBar() {
+        isShowingNoConnectionBar = true
+    }
+
+    fun hideNoConnectionBar() {
+        isShowingNoConnectionBar = false
+    }
+
     init {
         runDataNetworkUpdateCoroutine()
         runDataUpdateFlow()
+
+        connectionChecker.registerCallbacks(
+            onLost = {showNoConnectionBar()},
+            onAvailable = {hideNoConnectionBar()}
+        )
     }
 
     fun updateCurrencyHistory(currencyId: String) {
         viewModelScope.launch {
-            Log.d( "ViewModel", "starting to update history for $currencyId")
+            Log.d("ViewModel", "starting to update history for $currencyId")
 
-            with (Dispatchers.IO) {
+            with(Dispatchers.IO) {
 
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date = LocalDateTime.now().minusYears(1).plusDays(2).format(formatter);
@@ -48,10 +69,10 @@ class HomeViewModel @Inject constructor(
 
                 if (history == null) {
                     _histories.value.add(newHistory)
-                    Log.d( "ViewModel", "added history for $currencyId: ${newHistory}")
+                    Log.d("ViewModel", "added history for $currencyId: ${newHistory}")
                 } else {
                     _histories.value[_histories.value.indexOf(history)] = newHistory
-                    Log.d( "ViewModel", "updated history for $currencyId: ${newHistory}")
+                    Log.d("ViewModel", "updated history for $currencyId: ${newHistory}")
                 }
 
 
@@ -61,7 +82,7 @@ class HomeViewModel @Inject constructor(
 
     private fun runDataNetworkUpdateCoroutine() {
         viewModelScope.launch {
-            with (Dispatchers.IO) {
+            with(Dispatchers.IO) {
                 currenciesRepository.updateCurrencies()
 
             }
@@ -94,8 +115,10 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-
     }
+
+
+
 
 
 

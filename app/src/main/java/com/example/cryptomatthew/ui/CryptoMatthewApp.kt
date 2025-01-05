@@ -1,7 +1,13 @@
 package com.example.cryptomatthew.ui
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Text
@@ -11,7 +17,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,50 +41,71 @@ import com.example.cryptomatthew.ui.theme.CryptoMatthewTheme
 fun CryptoMatthewApp(
     viewModel: HomeViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
-    ) {
+) {
     CryptoMatthewTheme {
         val currencies by viewModel.currencies.collectAsStateWithLifecycle()
         val histories by viewModel.histories.collectAsStateWithLifecycle()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
+
+
+
+
         Scaffold(
             bottomBar = {
-                BottomNavigation(
-                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    topLevelRoutes.forEach { topLevelRoute ->
-                        BottomNavigationItem(
-                            icon = {
-                                Icon(
-                                    topLevelRoute.icon,
-                                    contentDescription = topLevelRoute.name
-                                )
-                            },
-                            label = { Text(topLevelRoute.name) },
-                            selected = currentDestination?.route == topLevelRoute.route.name,
-                            onClick = {
-                                navController.navigate(topLevelRoute.route.name) {
-                                    // Pop up to the start destination of the graph to
-                                    // avoid building up a large stack of destinations
-                                    // on the back stack as users select items
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    // Avoid multiple copies of the same destination when
-                                    // reselecting the same item
-                                    launchSingleTop = true
-                                    // Restore state when reselecting a previously selected item
-                                    restoreState = true
-                                }
-                            }
+                Column {
+                    AnimatedVisibility(viewModel.isShowingNoConnectionBar) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .background(color = MaterialTheme.colorScheme.errorContainer)
+                                ,
+                            contentAlignment = Alignment.Center,
 
-                        )
+                        ) {
+                            Text("Офлайн-режим", modifier = Modifier.padding(vertical = 4.dp))
+                        }
 
                     }
+                    BottomNavigation(
+                        backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        topLevelRoutes.forEach { topLevelRoute ->
+                            BottomNavigationItem(
+                                icon = {
+                                    Icon(
+                                        topLevelRoute.icon,
+                                        contentDescription = topLevelRoute.name
+                                    )
+                                },
+                                label = { Text(topLevelRoute.name) },
+                                selected = currentDestination?.route == topLevelRoute.route.name,
+                                onClick = {
+                                    navController.navigate(topLevelRoute.route.name) {
+                                        // Pop up to the start destination of the graph to
+                                        // avoid building up a large stack of destinations
+                                        // on the back stack as users select items
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        // Avoid multiple copies of the same destination when
+                                        // reselecting the same item
+                                        launchSingleTop = true
+                                        // Restore state when reselecting a previously selected item
+                                        restoreState = true
+                                    }
+                                }
+
+                            )
+
+                        }
+                    }
                 }
-            }
-        ) { innerPadding ->
+            },
+
+            ) { innerPadding ->
             NavHost(
                 navController = navController,
                 startDestination = Routes.Home.name,
@@ -93,13 +122,14 @@ fun CryptoMatthewApp(
                     )
                 }
                 composable(route = Routes.Favorites.name) {
-                    FavoritesScreen(currencies.filter { it.isFavorite },
+                    FavoritesScreen(
+                        currencies.filter { it.isFavorite },
                         onCurrencyClick = {
                             navController.navigate("${Routes.CurrencyInfo.name}/${it.id}")
                         },
                         onFavoriteIconClick = {
                             viewModel.toggleFavorite(currencyId = it)
-                        }
+                        },
                     )
                 }
                 composable(
@@ -109,7 +139,8 @@ fun CryptoMatthewApp(
                     })
                 ) { navBackStackEntry ->
                     Log.d("mainApp", "navigated to currencyInfoScreen")
-                    val currencyId = remember { navBackStackEntry.arguments?.getString("currency_id") }
+                    val currencyId =
+                        remember { navBackStackEntry.arguments?.getString("currency_id") }
                     if (currencyId != null) {
                         viewModel.updateCurrencyHistory(currencyId)
 
@@ -117,8 +148,7 @@ fun CryptoMatthewApp(
                             currencies.find { it.id == currencyId }!!,
                             histories.find { it.currencyId == currencyId },
                         )
-                    }
-                    else
+                    } else
                         Log.d("NavHost", "CryptoMatthewApp: navigation without id")
                 }
                 composable(route = Routes.Scanner.name) {

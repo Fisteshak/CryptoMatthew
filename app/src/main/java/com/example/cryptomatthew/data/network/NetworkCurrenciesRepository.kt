@@ -26,7 +26,7 @@ class NetworkCurrenciesRepository @Inject constructor(
                 emit(latestTickers)
                 Log.d("TICKERS EMITTER FLOW", "emitted, data now waiting 1min")
             } catch (e: Exception) {
-                Log.d("EXCEPTION", e.message.toString())
+                Log.d("Exception Getting Tickers", e.message.toString())
             } finally {
                 delay(refreshIntervalMs)
             }

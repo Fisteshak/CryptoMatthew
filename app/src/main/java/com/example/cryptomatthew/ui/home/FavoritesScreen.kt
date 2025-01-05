@@ -30,7 +30,8 @@ fun FavoritesScreen(
                     Text("Избранное")
                 }
             )
-        }
+        },
+
     ) { innerPadding ->
         CurrenciesSearchPanel(innerPadding, currencies, onCurrencyClick, onFavoriteIconClick)
     }

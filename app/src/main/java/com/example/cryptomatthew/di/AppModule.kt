@@ -8,6 +8,7 @@ import com.example.cryptomatthew.data.local.OfflineCurrenciesRepository
 import com.example.cryptomatthew.data.local.dao.CurrencyDao
 import com.example.cryptomatthew.data.network.CoinpaprikaAPI
 import com.example.cryptomatthew.data.network.NetworkCurrenciesRepository
+import com.example.cryptomatthew.ui.ConnectionChecker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -93,7 +94,23 @@ object CurrencyRepositoryModule {
     fun provideNetworkCurrenciesRepository(api: CoinpaprikaAPI) : NetworkCurrenciesRepository {
         return NetworkCurrenciesRepository(api)
     }
+}
 
 
+@Module
+@InstallIn(SingletonComponent::class)
+object ConnectionCheckerModule {
+    private var instance: ConnectionChecker? = null
 
+    @Provides
+    @Singleton
+    fun connectionChecker(@ApplicationContext context: Context): ConnectionChecker {
+        // if the Instance is not null, return it, otherwise create a new database instance.
+
+        return instance ?: synchronized(this) {
+            ConnectionChecker(context)
+                .also { instance = it }
+        }
+
+    }
 }
