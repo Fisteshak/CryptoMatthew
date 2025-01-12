@@ -4,11 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import com.example.cryptomatthew.data.CurrenciesRepository
 import com.example.cryptomatthew.data.local.AppDatabase
+import com.example.cryptomatthew.data.local.MIGRATION_1_2
 import com.example.cryptomatthew.data.local.OfflineCurrenciesRepository
 import com.example.cryptomatthew.data.local.dao.CurrencyDao
 import com.example.cryptomatthew.data.network.CoinpaprikaAPI
+import com.example.cryptomatthew.data.network.ConnectionChecker
 import com.example.cryptomatthew.data.network.NetworkCurrenciesRepository
-import com.example.cryptomatthew.ui.ConnectionChecker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,6 +33,7 @@ object RoomModule {
         // if the Instance is not null, return it, otherwise create a new database instance.
         return Instance ?: synchronized(this) {
             Room.databaseBuilder(context, AppDatabase::class.java, "currency_database")
+                .addMigrations(MIGRATION_1_2)
                 .build()
                 .also { Instance = it }
         }
@@ -105,8 +107,6 @@ object ConnectionCheckerModule {
     @Provides
     @Singleton
     fun connectionChecker(@ApplicationContext context: Context): ConnectionChecker {
-        // if the Instance is not null, return it, otherwise create a new database instance.
-
         return instance ?: synchronized(this) {
             ConnectionChecker(context)
                 .also { instance = it }

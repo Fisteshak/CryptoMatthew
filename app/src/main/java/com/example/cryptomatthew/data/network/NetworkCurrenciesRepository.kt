@@ -18,15 +18,14 @@ class NetworkCurrenciesRepository @Inject constructor(
 
     val latestTickers = flow {
         while (true) {
-            Log.d("TICKERS EMITTER FLOW", "getting tickers")
+            Log.d("NetworkCurrenciesRepository", "getting tickers")
             try {
                 val latestTickers = currencyAPI.getTickersListSync(quotes)
 
-                Log.d("TICKERS EMITTER FLOW", "got response: ${latestTickers.code()}")
+                Log.d("NetworkCurrenciesRepository", "got response: ${latestTickers.code()}")
                 emit(latestTickers)
-                Log.d("TICKERS EMITTER FLOW", "emitted, data now waiting 1min")
             } catch (e: Exception) {
-                Log.d("Exception Getting Tickers", e.message.toString())
+                Log.d("NetworkCurrenciesRepository", "Exception: " + e.message.toString())
             } finally {
                 delay(refreshIntervalMs)
             }

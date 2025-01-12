@@ -21,16 +21,16 @@ class CurrenciesRepository @Inject constructor(
         return offlineCurrenciesRepository.currenciesFlow.filter { it.isNotEmpty() && it[0].finsUSD != null }
     }
 
+    fun getCurrenciesWithRateNotificationsEnabled(): Flow<List<Currency>> {
+        return offlineCurrenciesRepository.currenciesFlow.filter { it.isNotEmpty() && it[0].finsUSD != null }
+    }
+
 
     private suspend fun clearDB() {
         offlineCurrenciesRepository.clearDB()
     }
 
 
-    //TODO this synchronization is ok (but not ideal) in terms of speed,
-    // but i really don't like that i need to pass Pair<Ticker, Boolean> to insert function
-    // that will work for now, but i should fix this in future
-    // maybe some intermediate class between NetworkTicker and CurrencyEntity (or add isFavorite to NetworkTicker?)
     suspend fun updateCurrencies() {
         networkCurrenciesRepository.latestTickers.collect {
             val tickers = it.body()
@@ -41,8 +41,12 @@ class CurrenciesRepository @Inject constructor(
                 val current = offlineCurrenciesRepository.getCurrencies()
 
 
+                // gets isFavorite and rateNotificationsEnabled from DB and updates ticker from network
                 val new = tickers.map { newTicker ->
-                    Pair(newTicker, current.find { it.id == newTicker.id }?.isFavorite ?: false)
+                    val c = current.find { it.id == newTicker.id }
+                    newTicker.isFavorite = c?.isFavorite ?: false
+                    newTicker.rateNotificationsEnabled = c?.rateNotificationsEnabled ?: false
+                    newTicker
                 }
 
                 clearDB()
@@ -52,6 +56,7 @@ class CurrenciesRepository @Inject constructor(
 
             } else {
                 Log.d("Currencies Repo", "error while updating tickers: ${it.code()}, ${it.message()}")
+
             }
         }
     }
@@ -88,5 +93,11 @@ class CurrenciesRepository @Inject constructor(
     suspend fun setIsFavorite(currencyId: String, isFavorite: Boolean) {
         offlineCurrenciesRepository.updateCurrencyIsFavorite(currencyId, isFavorite)
     }
+
+    suspend fun setRateNotificationsEnabled(currencyId: String, isFavorite: Boolean) {
+        offlineCurrenciesRepository.updateCurrencyRateNotificationsEnabled(currencyId, isFavorite)
+    }
+
+
 
 }

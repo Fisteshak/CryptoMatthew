@@ -1,4 +1,4 @@
-package com.example.cryptomatthew.ui
+package com.example.cryptomatthew.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class ConnectionChecker @Inject constructor(@ApplicationContext context: Context) {
 
-    var hasConnection: Boolean = false
+    var hasConnection: Boolean = true
         private set
 
     private var onAvailableCallback = {}
@@ -65,9 +65,10 @@ class ConnectionChecker @Inject constructor(@ApplicationContext context: Context
 
         val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (capabilities == null) hasConnection = false;
-        else {
-            if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) hasConnection = false;
-
+        else if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+            hasConnection = false
+        } else {
+            hasConnection = true
         }
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }

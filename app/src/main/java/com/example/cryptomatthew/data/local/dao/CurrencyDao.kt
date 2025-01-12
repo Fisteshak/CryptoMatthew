@@ -44,12 +44,12 @@ interface CurrencyDao {
     }
 
     @Transaction
-    suspend fun insertCurrenciesData(tickers: List<Pair<NetworkTicker, Boolean>>) {
+    suspend fun insertCurrenciesData(tickers: List<NetworkTicker>) {
         for (ticker in tickers) {
             val (currencyEntity, financialsEntityUSD, financialsEntityRUB) =
-                tickerToCurrencyAndFinancialsEntity(ticker.first)
+                tickerToCurrencyAndFinancialsEntity(ticker)
 
-            currencyEntity.isFavorite = ticker.second
+
 
             insertCurrencyEntity(currencyEntity)
             insertFinancialsEntity(financialsEntityUSD)
@@ -71,4 +71,7 @@ interface CurrencyDao {
 
     @Query("UPDATE currency SET isFavorite = :isFavorite WHERE id = :currencyId")
     suspend fun updateCurrencyIsFavorite(currencyId: String, isFavorite: Boolean)
+
+    @Query("UPDATE currency SET rateNotificationsEnabled = :notificationsEnabled WHERE id = :currencyId")
+    suspend fun updateCurrencyRateNotificationEnabled(currencyId: String, notificationsEnabled: Boolean)
 }

@@ -3,7 +3,6 @@ package com.example.cryptomatthew.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,12 +26,13 @@ import java.util.Locale
 
 @Composable
 fun CurrenciesSearchPanel(
-    innerPadding: PaddingValues,
     currencies: List<Currency>,
     onCurrencyClick: (currency: Currency) -> Unit,
-    onFavoriteIconClick: (currencyId: String) -> Unit
+    onFavoriteIconClick: (currencyId: String) -> Unit,
+    onNotificationsEnabledIconClick: (currencyId: String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.padding(innerPadding)) {
+    Column(modifier = modifier) {
 
         var searchText by rememberSaveable { mutableStateOf("") }
         TextField(
@@ -42,7 +42,7 @@ fun CurrenciesSearchPanel(
             maxLines = 1,
             textStyle = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
-                .padding(6.dp)
+                .padding(bottom = 6.dp)
                 .fillMaxWidth()
         )
         CurrencyListHeader(Modifier.padding(vertical = 3.dp))
@@ -54,7 +54,8 @@ fun CurrenciesSearchPanel(
                 },
             Modifier.padding(start = 4.dp, end = 16.dp),
             onCurrencyClick,
-            onFavoriteIconClick
+            onFavoriteIconClick,
+            onNotificationsEnabledIconClick
         )
     }
 }
@@ -97,6 +98,11 @@ fun CurrencyListHeader(modifier: Modifier = Modifier) {
                 .width(40.dp)
                 .padding(start = 10.dp)
         )
+        Spacer(
+            modifier = Modifier
+                .width(40.dp)
+                .padding(start = 10.dp)
+        )
     }
 }
 
@@ -110,7 +116,8 @@ fun CurrencyList(
     currencies: List<Currency>,
     modifier: Modifier = Modifier,
     onCurrencyClick: (currency: Currency) -> Unit,
-    onFavoriteIconClick: (currencyId: String) -> Unit
+    onFavoriteIconClick: (currencyId: String) -> Unit,
+    onNotificationsEnabledIconClick: (currencyId: String) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -118,7 +125,7 @@ fun CurrencyList(
     ) {
 
         items(currencies.size) { index ->
-            CryptoCard(currencies[index], onCurrencyClick, onFavoriteIconClick)
+            CryptoCard(currencies[index], onCurrencyClick, onFavoriteIconClick, onNotificationsEnabledIconClick)
         }
     }
 }

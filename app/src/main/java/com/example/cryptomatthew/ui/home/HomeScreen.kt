@@ -1,5 +1,6 @@
 package com.example.cryptomatthew.ui.home
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -14,12 +15,14 @@ import com.example.cryptomatthew.models.Currency
 @Composable
 fun HomeScreen(
     currencies: List<Currency>,
-    modifier: Modifier = Modifier,
     onCurrencyClick: (currency: Currency) -> Unit,
-    onFavoriteIconClick: (currencyId: String) -> Unit
+    onFavoriteIconClick: (currencyId: String) -> Unit,
+    onNotificationsEnabledIconClick: (currencyId: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 colors = topAppBarColors(
@@ -32,6 +35,12 @@ fun HomeScreen(
             )
         }
     ) { innerPadding ->
-        CurrenciesSearchPanel(innerPadding, currencies, onCurrencyClick, onFavoriteIconClick)
+        CurrenciesSearchPanel(
+            currencies,
+            onCurrencyClick,
+            onFavoriteIconClick,
+            onNotificationsEnabledIconClick,
+            Modifier.padding(innerPadding)
+        )
     }
 }

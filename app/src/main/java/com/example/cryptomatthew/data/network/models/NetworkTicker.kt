@@ -12,7 +12,9 @@ data class NetworkTicker(
     val beta_value: Double?,
     val first_data_at: String?,
     val last_updated: String?,
-    val quotes: NetworkQuotes
+    val quotes: NetworkQuotes,
+    var isFavorite: Boolean?, // API do not provide this field, it is stored in local database and added here for type conversion simplicity
+    var rateNotificationsEnabled: Boolean? // API do not provide this field, it is stored in local database and added here for type conversion simplicity
 )
 
 

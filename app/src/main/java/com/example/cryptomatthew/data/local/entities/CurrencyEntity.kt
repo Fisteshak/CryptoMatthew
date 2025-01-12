@@ -12,13 +12,18 @@ data class CurrencyEntity(
     val name: String,
     val symbol: String,
     @ColumnInfo(defaultValue = "false")
-    var isFavorite: Boolean
+    var isFavorite: Boolean,
+    @ColumnInfo(defaultValue = "false")
+
+    var rateNotificationsEnabled: Boolean
 ) {
     constructor(ticker: NetworkTicker) : this(
         ticker.id,
         ticker.rank.toInt(),
         ticker.name,
         ticker.symbol,
-        false
+        ticker.isFavorite == true,
+        ticker.rateNotificationsEnabled == true
+
     )
 }

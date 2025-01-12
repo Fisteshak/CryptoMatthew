@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "64b22869a0991088c2a46454eaee2bc0",
+    "version": 1,
+    "identityHash": "f69d816378027f57f404a18177e5ed71",
     "entities": [
       {
         "tableName": "currency",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `rank` INTEGER NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `rank` INTEGER NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `isFavorite` INTEGER NOT NULL DEFAULT false, `rateNotificationsEnabled` INTEGER NOT NULL DEFAULT false, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -31,6 +31,20 @@
             "columnName": "symbol",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "isFavorite",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
+          },
+          {
+            "fieldPath": "rateNotificationsEnabled",
+            "columnName": "rateNotificationsEnabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
           }
         ],
         "primaryKey": {
@@ -44,7 +58,7 @@
       },
       {
         "tableName": "financials",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`currencyId` TEXT NOT NULL, `priceCurrency` TEXT NOT NULL, `price` REAL NOT NULL, `volume24h` REAL NOT NULL, `volume24hChange24h` REAL, `marketCap` REAL, `marketCapChange24h` REAL, `percentChange1h` REAL, `percentChange12h` REAL, `percentChange24h` REAL, `percentChange7d` REAL, `percentChange30d` REAL, `percentChange1y` REAL, PRIMARY KEY(`currencyId`, `priceCurrency`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`currencyId` TEXT NOT NULL, `priceCurrency` TEXT NOT NULL, `price` REAL NOT NULL, `volume24h` REAL NOT NULL, `volume24hChange24h` REAL, `marketCap` REAL, `marketCapChange24h` REAL, `percentChange1h` REAL, `percentChange12h` REAL, `percentChange24h` REAL, `percentChange7d` REAL, `percentChange30d` REAL, `percentChange1y` REAL, `athPrice` REAL, `athDate` INTEGER, `percentFromPriceAth` REAL, PRIMARY KEY(`currencyId`, `priceCurrency`))",
         "fields": [
           {
             "fieldPath": "currencyId",
@@ -123,6 +137,24 @@
             "columnName": "percentChange1y",
             "affinity": "REAL",
             "notNull": false
+          },
+          {
+            "fieldPath": "athPrice",
+            "columnName": "athPrice",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "athDate",
+            "columnName": "athDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "percentFromPriceAth",
+            "columnName": "percentFromPriceAth",
+            "affinity": "REAL",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -185,7 +217,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '64b22869a0991088c2a46454eaee2bc0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f69d816378027f57f404a18177e5ed71')"
     ]
   }
 }

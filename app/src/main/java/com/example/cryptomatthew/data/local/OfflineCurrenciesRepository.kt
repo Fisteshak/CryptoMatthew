@@ -15,16 +15,20 @@ class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: C
         get() {
             return currencyDao.getAllCurrenciesFlow()
                 .combine(currencyDao.getAllFinancialsFlow()) { currList: List<CurrencyEntity>, finList: List<FinancialsEntity> ->
-                    currList.map { currency ->
-                        Currency(
-                            currency,
-                            finList.find { it.currencyId == currency.id && it.priceCurrency == "USD" },
-                            finList.find { it.currencyId == currency.id && it.priceCurrency == "RUB" },
-                        )
-                    }
+                    combineCurrencyAndFinancialsEntitiesToCurrency(currList, finList)
                 }
 
         }
+
+    private fun combineCurrencyAndFinancialsEntitiesToCurrency(currList: List<CurrencyEntity>, finList: List<FinancialsEntity>): List<Currency> {
+        return currList.map { currency ->
+            Currency(
+                currency,
+                finList.find { it.currencyId == currency.id && it.priceCurrency == "USD" },
+                finList.find { it.currencyId == currency.id && it.priceCurrency == "RUB" },
+            )
+        }
+    }
 
     suspend fun getCurrencies(): List<CurrencyEntity> {
         return currencyDao.getAllCurrencies()
@@ -32,7 +36,7 @@ class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: C
 
 
     // takes List of Pairs, where first value is ticker get from API and second value is isFavorite for this ticker
-    suspend fun insertCurrenciesData(tickers: List<Pair<NetworkTicker, Boolean>>) {
+    suspend fun insertCurrenciesData(tickers: List<NetworkTicker>) {
         currencyDao.insertCurrenciesData(tickers)
     }
 
@@ -58,5 +62,9 @@ class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: C
 
     suspend fun updateCurrencyIsFavorite(currencyId: String, isFavorite: Boolean) {
         currencyDao.updateCurrencyIsFavorite(currencyId, isFavorite)
+    }
+
+    suspend fun updateCurrencyRateNotificationsEnabled(currencyId: String, isFavorite: Boolean) {
+        currencyDao.updateCurrencyRateNotificationEnabled(currencyId, isFavorite)
     }
 }

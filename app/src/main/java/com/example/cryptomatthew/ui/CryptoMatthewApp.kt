@@ -1,7 +1,9 @@
 package com.example.cryptomatthew.ui
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,6 +40,7 @@ import com.example.cryptomatthew.ui.home.HomeViewModel
 import com.example.cryptomatthew.ui.theme.CryptoMatthewTheme
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CryptoMatthewApp(
     viewModel: HomeViewModel = viewModel(),
@@ -59,11 +63,10 @@ fun CryptoMatthewApp(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .wrapContentHeight()
-                                .background(color = MaterialTheme.colorScheme.errorContainer)
-                                ,
+                                .background(color = MaterialTheme.colorScheme.errorContainer),
                             contentAlignment = Alignment.Center,
 
-                        ) {
+                            ) {
                             Text("Офлайн-режим", modifier = Modifier.padding(vertical = 4.dp))
                         }
 
@@ -109,27 +112,61 @@ fun CryptoMatthewApp(
             NavHost(
                 navController = navController,
                 startDestination = Routes.Home.name,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    )
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    )
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    )
+                }
             ) {
-                composable(route = Routes.Home.name) {
+                composable(
+                    route = Routes.Home.name,
+                ) {
                     HomeScreen(currencies,
                         onCurrencyClick = {
                             navController.navigate("${Routes.CurrencyInfo.name}/${it.id}")
                         },
                         onFavoriteIconClick = {
                             viewModel.toggleFavorite(currencyId = it)
+                        },
+                        onNotificationsEnabledIconClick = {
+                            viewModel.toggleNotificationsEnabled(it)
                         }
                     )
                 }
-                composable(route = Routes.Favorites.name) {
+                composable(
+                    route = Routes.Favorites.name,
+                ) {
                     FavoritesScreen(
-                        currencies.filter { it.isFavorite },
+                        currencies,
                         onCurrencyClick = {
                             navController.navigate("${Routes.CurrencyInfo.name}/${it.id}")
                         },
                         onFavoriteIconClick = {
                             viewModel.toggleFavorite(currencyId = it)
                         },
+                        onNotificationsEnabledIconClick = {
+                            viewModel.toggleNotificationsEnabled(it)
+                        }
                     )
                 }
                 composable(
@@ -152,7 +189,11 @@ fun CryptoMatthewApp(
                         Log.d("NavHost", "CryptoMatthewApp: navigation without id")
                 }
                 composable(route = Routes.Scanner.name) {
-                    ScannerScreen()
+                    NotificationScreen(
+                        viewModel.notificationEnabled.collectAsStateWithLifecycle(false).value ?: false,
+                        onConfirm = { viewModel.addNotificationScheduleTime(it) },
+                        onDismiss = {},
+                        onEnableNotificationChange = { viewModel.onNotificationEnabledChange(it)  } )
                 }
 
             }

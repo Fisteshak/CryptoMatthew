@@ -25,6 +25,7 @@ fun CryptoCard(
     currency: Currency,
     onCurrencyClick: (currency: Currency) -> Unit,
     onFavoriteIconClick: (currencyId: String) -> Unit,
+    onNotificationsEnabledIconClick: (currencyId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -38,6 +39,7 @@ fun CryptoCard(
         verticalAlignment = Alignment.CenterVertically,
 
     ) {
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -74,7 +76,6 @@ fun CryptoCard(
                 .padding(start = 10.dp),
             contentAlignment = Alignment.Center
         ) {
-
             //TODO change content description
             Image(
                 painter = painterResource(
@@ -82,6 +83,23 @@ fun CryptoCard(
                 ),
                 contentDescription = "is favorite",
                 modifier = Modifier.clickable { onFavoriteIconClick(currency.id) }
+            )
+        }
+
+        Box(
+
+            modifier = Modifier
+                .requiredWidth(40.dp)
+                .padding(start = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            //TODO change content description
+            Image(
+                painter = painterResource(
+                    id = if (currency.rateNotificationsEnabled) R.drawable.bell else R.drawable.bell_outline
+                ),
+                contentDescription = "rate notifications enabled",
+                modifier = Modifier.clickable { onNotificationsEnabledIconClick(currency.id) }
             )
         }
     }
