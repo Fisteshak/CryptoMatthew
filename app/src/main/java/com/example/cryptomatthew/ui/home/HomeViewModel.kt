@@ -34,10 +34,8 @@ class HomeViewModel @Inject constructor(
     private val currenciesRepository: CurrenciesRepository,
     private val connectionChecker: ConnectionChecker,
     private val notificationScheduler: NotificationScheduler,
-    val settingsDataStore: SettingsDataStore
+    private val settingsDataStore: SettingsDataStore
 ) : ViewModel() {
-
-
 
 
     private val _currencies = MutableStateFlow<List<Currency>>(emptyList())
@@ -106,7 +104,7 @@ class HomeViewModel @Inject constructor(
 
     private fun runDataUpdateFlow() {
         viewModelScope.launch {
-            currenciesRepository.getCurrencies().collect { x ->
+            currenciesRepository.getCurrenciesFlow().collect { x ->
                 _currencies.update { x }
                 Log.d("HomeViewModel", "updated tickers ${x.toString()}")
             }
@@ -138,7 +136,10 @@ class HomeViewModel @Inject constructor(
             if (x != null) {
                 //_currencies.update { it.forEach { x -> x.isFavorite = true }; it}
                 //x.isFavorite = !x.isFavorite
-                currenciesRepository.setRateNotificationsEnabled(currencyId, !x.rateNotificationsEnabled)
+                currenciesRepository.setRateNotificationsEnabled(
+                    currencyId,
+                    !x.rateNotificationsEnabled
+                )
             } else {
                 Log.d(
                     "HomeViewModel",
@@ -153,13 +154,12 @@ class HomeViewModel @Inject constructor(
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, time.hour)
         calendar.set(Calendar.MINUTE, time.minute)
-        Log.d("NotificationScheduler", "addNotificationScheduleTime: ${calendar.time}")
+        calendar.set(Calendar.SECOND, 0)
 
         notificationScheduler.scheduleRepeatingNotification(
             calendar,
-            60000,
-            "Repeating Notification Test",
-            "Test",
+            24 * 60 * 60 * 1000,
+            2,
             NotificationChannelId.EXCHANGE_RATES
         )
     }
@@ -167,17 +167,16 @@ class HomeViewModel @Inject constructor(
 
     fun onNotificationEnabledChange(enabled: Boolean) {
 
-        if (!enabled) notificationScheduler.cancelNotification()
+        if (!enabled) notificationScheduler.cancelNotification(2)
         viewModelScope.launch {
 
-            with (Dispatchers.IO) {
+            with(Dispatchers.IO) {
                 settingsDataStore.saveNotificationsEnabled(enabled)
             }
         }
     }
 
     val notificationEnabled: Flow<Boolean?> = settingsDataStore.getNotificationsEnabled()
-
 
 
 }

@@ -31,11 +31,12 @@ class NotificationScheduler @Inject constructor(
     @ApplicationContext val context: Context
 ) {
 
-    private fun createNotificationIntent(title: String, message: String, channel: NotificationChannelId): PendingIntent {
+    private fun createNotificationIntent(
+        notificationId: Int,
+        channel: NotificationChannelId
+    ): PendingIntent {
         val notificationIntent = Intent(context, NotificationReceiver::class.java)
-        notificationIntent.putExtra("notificationId", 2)
-        notificationIntent.putExtra("title", title)
-        notificationIntent.putExtra("message", message)
+        notificationIntent.putExtra("notificationId", notificationId)
         notificationIntent.putExtra("channelId", channel.id)
 
         return PendingIntent.getBroadcast(
@@ -57,31 +58,25 @@ class NotificationScheduler @Inject constructor(
         notificationManager.createNotificationChannel(mChannel)
     }
 
-    fun scheduleNotification(calendar: Calendar, title: String, message: String, channel: NotificationChannelId) {
-        createNotificationChannel(channel)
-        val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-        val pendingIntent = createNotificationIntent(title, message, channel)
-
-        alarmManager.set(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
-    }
-
-    fun cancelNotification() {
+    fun cancelNotification(notificationId: Int) {
         // extras are not taken into account when comparing
-        val pendingIntent = createNotificationIntent("", "", NotificationChannelId.EXCHANGE_RATES)
+        val pendingIntent =
+            createNotificationIntent(notificationId, NotificationChannelId.EXCHANGE_RATES)
         val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
 
         alarmManager.cancel(pendingIntent)
 
     }
 
-    fun scheduleRepeatingNotification(calendar: Calendar, intervalMs: Long, title: String, message: String, channel: NotificationChannelId) {
+    fun scheduleRepeatingNotification(
+        calendar: Calendar,
+        intervalMs: Long,
+        notificationId: Int,
+        channel: NotificationChannelId
+    ) {
         createNotificationChannel(channel)
         val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-        val pendingIntent = createNotificationIntent(title, message, channel)
+        val pendingIntent = createNotificationIntent(notificationId, channel)
 
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,

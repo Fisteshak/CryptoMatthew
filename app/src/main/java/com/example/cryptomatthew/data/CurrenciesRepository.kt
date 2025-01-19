@@ -9,6 +9,7 @@ import com.example.cryptomatthew.models.History
 import com.example.cryptomatthew.models.Tick
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.take
 import javax.inject.Inject
 
 class CurrenciesRepository @Inject constructor(
@@ -17,48 +18,53 @@ class CurrenciesRepository @Inject constructor(
 ) {
 
 
-    fun getCurrencies(): Flow<List<Currency>> {
+    fun getCurrenciesFlow(): Flow<List<Currency>> {
         return offlineCurrenciesRepository.currenciesFlow.filter { it.isNotEmpty() && it[0].finsUSD != null }
     }
 
-    fun getCurrenciesWithRateNotificationsEnabled(): Flow<List<Currency>> {
-        return offlineCurrenciesRepository.currenciesFlow.filter { it.isNotEmpty() && it[0].finsUSD != null }
+    suspend fun getCurrencies(): List<Currency> {
+        return offlineCurrenciesRepository.getCurrenciesWithFinancials()
     }
-
 
     private suspend fun clearDB() {
         offlineCurrenciesRepository.clearDB()
     }
 
 
-    suspend fun updateCurrencies() {
-        networkCurrenciesRepository.latestTickers.collect {
-            val tickers = it.body()
-            Log.d("Currencies Repo", "tickers request response: ${it.code()}")
+    suspend fun updateCurrencies(terminateAfter: Int? = null) {
+        if (terminateAfter != null) assert(terminateAfter > 0)
 
-            if (it.code() == 200 && tickers != null) {
+        (if (terminateAfter != null && terminateAfter > 0)
+            networkCurrenciesRepository.getLatestTickers(terminateAfter).take(terminateAfter)
+        else
+            networkCurrenciesRepository.getLatestTickers())
+            .collect {
+                val tickers = it.body()
+                Log.d("Currencies Repo", "tickers request response: ${it.code()}")
 
-                val current = offlineCurrenciesRepository.getCurrencies()
+                if (it.code() == 200 && tickers != null) {
+
+                    val current = offlineCurrenciesRepository.getCurrencies()
 
 
-                // gets isFavorite and rateNotificationsEnabled from DB and updates ticker from network
-                val new = tickers.map { newTicker ->
-                    val c = current.find { it.id == newTicker.id }
-                    newTicker.isFavorite = c?.isFavorite ?: false
-                    newTicker.rateNotificationsEnabled = c?.rateNotificationsEnabled ?: false
-                    newTicker
+                    // gets isFavorite and rateNotificationsEnabled from DB and updates ticker from network
+                    val new = tickers.map { newTicker ->
+                        val c = current.find { it.id == newTicker.id }
+                        newTicker.isFavorite = c?.isFavorite ?: false
+                        newTicker.rateNotificationsEnabled = c?.rateNotificationsEnabled ?: false
+                        newTicker
+                    }
+
+                    clearDB()
+
+                    offlineCurrenciesRepository.insertCurrenciesData(new)
+                } else {
+                    Log.d(
+                        "Currencies Repo",
+                        "error while updating tickers: ${it.code()}, ${it.message()}"
+                    )
                 }
-
-                clearDB()
-
-                offlineCurrenciesRepository.insertCurrenciesData(new)
-
-
-            } else {
-                Log.d("Currencies Repo", "error while updating tickers: ${it.code()}, ${it.message()}")
-
             }
-        }
     }
 
 
@@ -85,7 +91,7 @@ class CurrenciesRepository @Inject constructor(
 
         return History(
             currencyId,
-            ticks.map {Tick(it, "$")}
+            ticks.map { Tick(it, "$") }
         )
 
     }
@@ -97,7 +103,6 @@ class CurrenciesRepository @Inject constructor(
     suspend fun setRateNotificationsEnabled(currencyId: String, isFavorite: Boolean) {
         offlineCurrenciesRepository.updateCurrencyRateNotificationsEnabled(currencyId, isFavorite)
     }
-
 
 
 }

@@ -20,7 +20,10 @@ class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: C
 
         }
 
-    private fun combineCurrencyAndFinancialsEntitiesToCurrency(currList: List<CurrencyEntity>, finList: List<FinancialsEntity>): List<Currency> {
+    private fun combineCurrencyAndFinancialsEntitiesToCurrency(
+        currList: List<CurrencyEntity>,
+        finList: List<FinancialsEntity>
+    ): List<Currency> {
         return currList.map { currency ->
             Currency(
                 currency,
@@ -32,6 +35,14 @@ class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: C
 
     suspend fun getCurrencies(): List<CurrencyEntity> {
         return currencyDao.getAllCurrencies()
+    }
+
+    suspend fun getCurrenciesWithFinancials(): List<Currency> {
+        return combineCurrencyAndFinancialsEntitiesToCurrency(
+            currencyDao.getAllCurrencies(),
+            currencyDao.getAllFinancials()
+        )
+
     }
 
 
