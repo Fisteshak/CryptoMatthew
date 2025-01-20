@@ -1,4 +1,4 @@
-package com.example.cryptomatthew.ui.home
+package com.example.cryptomatthew.ui
 
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api

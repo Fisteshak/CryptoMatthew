@@ -1,5 +1,7 @@
-package com.example.cryptomatthew.ui
+package com.example.cryptomatthew.ui.notifications
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,21 +91,46 @@ fun TimePickerPanel(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun NotificationSwitchPanel(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+
     Row(
         modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+
+        val permissionIsNeeded = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        val notificationPermissionState = if (permissionIsNeeded) {
+            rememberPermissionState(
+                Manifest.permission.POST_NOTIFICATIONS,
+                onPermissionResult = {
+                    if (it) onCheckedChange(!checked)
+                }
+            )
+        } else null
+
         Text("Включить уведомления о курсе")
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = {
+                if (notificationPermissionState != null) {
+                    if (notificationPermissionState.status.isGranted) {
+                        onCheckedChange(it)
+                    } else if (!notificationPermissionState.status.isGranted || notificationPermissionState.status.shouldShowRationale) {
+                        notificationPermissionState.launchPermissionRequest()
+                    }
+                } else {
+                    onCheckedChange(it)
+                }
+
+            }
         )
 
     }

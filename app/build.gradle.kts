@@ -133,7 +133,9 @@ dependencies {
 
     // Preferences DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-    
+
+    // accompanist-permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
 }
 

@@ -34,7 +34,7 @@ import androidx.navigation.navArgument
 import com.example.cryptomatthew.ui.currencyScreen.CurrencyInfoScreen
 import com.example.cryptomatthew.ui.home.FavoritesScreen
 import com.example.cryptomatthew.ui.home.HomeScreen
-import com.example.cryptomatthew.ui.home.HomeViewModel
+import com.example.cryptomatthew.ui.notifications.NotificationScreen
 import com.example.cryptomatthew.ui.theme.CryptoMatthewTheme
 
 
