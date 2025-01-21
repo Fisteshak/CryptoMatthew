@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -44,6 +45,8 @@ class HomeViewModel @Inject constructor(
     private val _histories = MutableStateFlow<MutableList<History>>(mutableListOf())
     val histories: StateFlow<List<History>> = _histories.asStateFlow()
 
+    var recompose by mutableStateOf(false)
+
     var isShowingNoConnectionBar: Boolean by mutableStateOf(false)
         private set
 
@@ -58,6 +61,7 @@ class HomeViewModel @Inject constructor(
     }
 
     init {
+        Log.d("ViewModel", "created view model")
         runDataNetworkUpdateCoroutine()
         runDataUpdateFlow()
 
@@ -80,13 +84,23 @@ class HomeViewModel @Inject constructor(
                 val history = _histories.value.find { it.currencyId == currencyId }
                 val newHistory = currenciesRepository.getCurrencyHistory(currencyId)
 
+                if (history == newHistory) return@launch
+
                 if (history == null) {
-                    _histories.value.add(newHistory)
+                    _histories.update {
+                        it.add(newHistory)
+                        it
+                    }
                     Log.d("ViewModel", "added history for $currencyId: ${newHistory}")
                 } else {
-                    _histories.value[_histories.value.indexOf(history)] = newHistory
+
+                    _histories.update {
+                        it[_histories.value.indexOf(history)] = newHistory
+                        it
+                    }
                     Log.d("ViewModel", "updated history for $currencyId: ${newHistory}")
                 }
+                recompose = !recompose // TODO described in CurrencyInfoScreen
 
 
             }
@@ -156,6 +170,17 @@ class HomeViewModel @Inject constructor(
         calendar.set(Calendar.MINUTE, time.minute)
         calendar.set(Calendar.SECOND, 0)
 
+        viewModelScope.launch {
+            var h = time.hour.toString()
+            if (h.length == 1) h = "0" + h
+            var m = time.minute.toString()
+            if (m.length == 1) m = "0" + m
+
+            with(Dispatchers.IO) {
+                settingsDataStore.saveNotificationsTime("$h:$m")
+            }
+        }
+
         notificationScheduler.scheduleRepeatingNotification(
             calendar,
             24 * 60 * 60 * 1000,
@@ -164,19 +189,37 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-
     fun onNotificationEnabledChange(enabled: Boolean) {
-
         if (!enabled) notificationScheduler.cancelNotification(2)
+
         viewModelScope.launch {
 
             with(Dispatchers.IO) {
                 settingsDataStore.saveNotificationsEnabled(enabled)
+
+                // get time from data store
+                val time = notificationsTime.first()
+                val hour = time.substring(0..1).toInt()
+                val min = time.substring(3..4).toInt()
+
+                val calendar = Calendar.getInstance()
+                calendar.set(Calendar.HOUR_OF_DAY, hour)
+                calendar.set(Calendar.MINUTE, min)
+                calendar.set(Calendar.SECOND, 0)
+
+                notificationScheduler.scheduleRepeatingNotification(
+                    calendar,
+                    24 * 60 * 60 * 1000,
+                    2,
+                    NotificationChannelId.EXCHANGE_RATES
+                )
             }
         }
     }
 
-    val notificationEnabled: Flow<Boolean?> = settingsDataStore.getNotificationsEnabled()
+    val notificationEnabled: Flow<Boolean> = settingsDataStore.getNotificationsEnabled()
 
+
+    val notificationsTime: Flow<String> = settingsDataStore.getNotificationsTime()
 
 }

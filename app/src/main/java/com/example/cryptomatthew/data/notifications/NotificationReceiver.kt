@@ -41,6 +41,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val len = min(old.size, new.size)
         var message = ""
+        if (len == 0) return@goAsync
 
         old.zip(new).forEachIndexed { index, it ->
             message +=

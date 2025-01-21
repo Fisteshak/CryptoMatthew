@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.tooling.preview.Preview
 import java.util.Locale
 
 @Composable
@@ -159,3 +160,27 @@ fun CurrencyLineGraph(
         )
     }
 }
+
+// ...existing code...
+@Preview(showBackground = true, heightDp = 250)
+@Composable
+fun PreviewLineGraph() {
+    val sampleData = listOf(
+        DataPoint(value = 1.0, label = "Jan"),
+        DataPoint(value = 2.3, label = "Feb"),
+        DataPoint(value = 3.7, label = "Mar"),
+        DataPoint(value = 2.9, label = "Apr"),
+        DataPoint(value = 1.0, label = "May"),
+        DataPoint(value = 3.2, label = "Jun"),
+        DataPoint(value = 3.2, label = "Jul"),
+        DataPoint(value = 3.2, label = "Aug"),
+        DataPoint(value = 3.2, label = "Aug"),
+        DataPoint(value = 3.2, label = "Aug"),
+    )
+    CurrencyLineGraph(
+        dataPoints = sampleData,
+        xValuesNum = 6,
+        yValuesNum = 4,
+    )
+}
+// ...existing code...

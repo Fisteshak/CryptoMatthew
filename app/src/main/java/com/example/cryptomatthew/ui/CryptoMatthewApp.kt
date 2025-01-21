@@ -16,13 +16,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -41,17 +41,17 @@ import com.example.cryptomatthew.ui.theme.CryptoMatthewTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CryptoMatthewApp(
-    viewModel: HomeViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     CryptoMatthewTheme {
-        val currencies by viewModel.currencies.collectAsStateWithLifecycle()
-        val histories by viewModel.histories.collectAsStateWithLifecycle()
+
+        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        }
+        val viewModel: HomeViewModel = hiltViewModel(viewModelStoreOwner = viewModelStoreOwner)
+
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
-
-
-
 
         Scaffold(
             bottomBar = {
@@ -77,8 +77,7 @@ fun CryptoMatthewApp(
                             BottomNavigationItem(
                                 icon = {
                                     Icon(
-                                        topLevelRoute.icon,
-                                        contentDescription = topLevelRoute.name
+                                        topLevelRoute.icon, contentDescription = topLevelRoute.name
                                     )
                                 },
                                 label = { Text(topLevelRoute.name) },
@@ -112,36 +111,24 @@ fun CryptoMatthewApp(
                 startDestination = Routes.Home.name,
                 modifier = Modifier.padding(innerPadding),
             ) {
-                composable(
-                    route = Routes.Home.name,
-                ) {
-                    HomeScreen(currencies,
-                        onCurrencyClick = {
-                            navController.navigate("${Routes.CurrencyInfo.name}/${it.id}")
-                        },
-                        onFavoriteIconClick = {
-                            viewModel.toggleFavorite(currencyId = it)
-                        },
-                        onNotificationsEnabledIconClick = {
-                            viewModel.toggleNotificationsEnabled(it)
-                        }
-                    )
+                composable(route = Routes.Home.name) {
+                    CompositionLocalProvider(
+                        LocalViewModelStoreOwner provides viewModelStoreOwner
+                    ) {
+
+                        HomeScreen(
+                            { navController.navigate("${Routes.CurrencyInfo.name}/${it.id}") }
+                        )
+                    }
                 }
-                composable(
-                    route = Routes.Favorites.name,
-                ) {
-                    FavoritesScreen(
-                        currencies,
-                        onCurrencyClick = {
-                            navController.navigate("${Routes.CurrencyInfo.name}/${it.id}")
-                        },
-                        onFavoriteIconClick = {
-                            viewModel.toggleFavorite(currencyId = it)
-                        },
-                        onNotificationsEnabledIconClick = {
-                            viewModel.toggleNotificationsEnabled(it)
-                        }
-                    )
+                composable(route = Routes.Favorites.name) {
+                    CompositionLocalProvider(
+                        LocalViewModelStoreOwner provides viewModelStoreOwner
+                    ) {
+                        FavoritesScreen(
+                            { navController.navigate("${Routes.CurrencyInfo.name}/${it.id}") },
+                        )
+                    }
                 }
                 composable(
                     route = "${Routes.CurrencyInfo.name}/{currency_id}",
@@ -149,25 +136,22 @@ fun CryptoMatthewApp(
                         type = NavType.StringType
                     })
                 ) { navBackStackEntry ->
-                    Log.d("mainApp", "navigated to currencyInfoScreen")
                     val currencyId =
-                        remember { navBackStackEntry.arguments?.getString("currency_id") }
+                        navBackStackEntry.arguments?.getString("currency_id")
                     if (currencyId != null) {
-                        viewModel.updateCurrencyHistory(currencyId)
-
-                        CurrencyInfoScreen(
-                            currencies.find { it.id == currencyId }!!,
-                            histories.find { it.currencyId == currencyId },
-                        )
-                    } else
-                        Log.d("NavHost", "CryptoMatthewApp: navigation without id")
+                        CompositionLocalProvider(
+                            LocalViewModelStoreOwner provides viewModelStoreOwner
+                        ) {
+                            CurrencyInfoScreen(currencyId)
+                        }
+                    } else Log.d("NavHost", "CryptoMatthewApp: navigation without id")
                 }
                 composable(route = Routes.Scanner.name) {
-                    NotificationScreen(
-                        viewModel.notificationEnabled.collectAsStateWithLifecycle(false).value ?: false,
-                        onConfirm = { viewModel.addNotificationScheduleTime(it) },
-                        onDismiss = {},
-                        onEnableNotificationChange = { viewModel.onNotificationEnabledChange(it)  } )
+                    CompositionLocalProvider(
+                        LocalViewModelStoreOwner provides viewModelStoreOwner
+                    ) {
+                        NotificationScreen()
+                    }
                 }
 
             }

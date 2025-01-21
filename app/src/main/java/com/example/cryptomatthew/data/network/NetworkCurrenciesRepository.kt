@@ -47,7 +47,11 @@ class NetworkCurrenciesRepository @Inject constructor(
     // gets ticker history with 7d interval. Start date is a string with format 'yyyy-mm-dd'
     suspend fun getWeeklyTickerHistory(tickerId: String, startDate: String): Response<List<NetworkTick>>? {
         try {
-            return currencyAPI.getTickerHistory(tickerId = tickerId, startDate = startDate, interval = "7d")
+            return currencyAPI.getTickerHistory(
+                tickerId = tickerId,
+                startDate = startDate,
+                interval = "1d"
+            )
         } catch (e: Exception) {
             Log.d("EXCEPTION", e.toString())
             return null;

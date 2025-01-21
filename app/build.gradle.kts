@@ -137,6 +137,10 @@ dependencies {
     // accompanist-permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
+    // integration of hilt with navigation or smth
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+
 }
 
 

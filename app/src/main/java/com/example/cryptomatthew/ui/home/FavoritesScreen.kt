@@ -19,17 +19,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cryptomatthew.models.Currency
+import com.example.cryptomatthew.ui.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
-    currencies: List<Currency>,
-    onCurrencyClick: (currency: Currency) -> Unit,
-    onFavoriteIconClick: (currencyId: String) -> Unit,
-    onNotificationsEnabledIconClick: (currencyId: String) -> Unit,
+    onNavigateToCurrency: (currency: Currency) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel: HomeViewModel = hiltViewModel()
+    val currencies by viewModel.currencies.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
@@ -51,7 +53,9 @@ fun FavoritesScreen(
             var selectedIndex by remember { mutableIntStateOf(0) }
             val options = listOf("Избранное", "Уведомления")
 
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+            SingleChoiceSegmentedButtonRow(modifier = Modifier
+                .fillMaxWidth()
+                .padding(6.dp)) {
                 options.forEachIndexed { index, label ->
                     SegmentedButton(
                         shape = SegmentedButtonDefaults.itemShape(
@@ -67,9 +71,9 @@ fun FavoritesScreen(
             }
             CurrenciesSearchPanel(
                 currencies.filter { if (selectedIndex == 0) it.isFavorite else it.rateNotificationsEnabled },
-                onCurrencyClick,
-                onFavoriteIconClick,
-                onNotificationsEnabledIconClick
+                onNavigateToCurrency,
+                { viewModel.toggleFavorite(currencyId = it) },
+                { viewModel.toggleNotificationsEnabled(it) },
             )
         }
     }

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import javax.inject.Inject
@@ -84,6 +85,7 @@ class NotificationScheduler @Inject constructor(
             intervalMs,
             pendingIntent
         )
+        Log.d("NotificationScheduler", "scheduled ")
 
     }
 

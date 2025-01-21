@@ -8,32 +8,40 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.cryptomatthew.ui.HomeViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationScreen(
-    notificationsEnabled: Boolean,
-    onConfirm: (time: TimePickerState) -> Unit,
-    onDismiss: () -> Unit,
-    onEnableNotificationChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val viewModel: HomeViewModel = hiltViewModel()
+
+    val time by viewModel.notificationsTime.collectAsStateWithLifecycle("12:00")
+    val notificationsEnabled by
+    viewModel.notificationEnabled.collectAsStateWithLifecycle(false)
+
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -43,14 +51,19 @@ fun NotificationScreen(
 
         NotificationSwitchPanel(
             notificationsEnabled,
-            onEnableNotificationChange,
+            { viewModel.onNotificationEnabledChange(it) },
             Modifier
                 .padding(10.dp)
                 .fillMaxWidth()
         )
         AnimatedVisibility(notificationsEnabled) {
 
-            TimePickerPanel(onConfirm, onDismiss, modifier.fillMaxWidth())
+            TimePickerPanel(
+                { viewModel.addNotificationScheduleTime(it) },
+                {},
+                time,
+                modifier.fillMaxWidth()
+            )
 
         }
     }
@@ -61,32 +74,41 @@ fun NotificationScreen(
 fun TimePickerPanel(
     onConfirm: (time: TimePickerState) -> Unit,
     onDismiss: () -> Unit,
+    time: String,
     modifier: Modifier = Modifier
 ) {
-    val currentTime = Calendar.getInstance()
+    var showTimePickerDialog by remember { mutableStateOf(false) }
 
-    val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
-        is24Hour = true,
-    )
 
+
+    if (showTimePickerDialog) {
+        DialWithDialogExample(
+            onConfirm = {
+                showTimePickerDialog = false
+                onConfirm(it)
+            },
+            onDismiss = {
+                showTimePickerDialog = false
+                onDismiss()
+            }
+        )
+    }
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         Text(
-            "Выберите время получения уведомления",
+            "Время получения уведомления",
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        TimeInput(
-            state = timePickerState,
-        )
-        Row(horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(time)
 
-            Button(onClick = onDismiss) {
-                Text("Dismiss picker")
-            }
-            Button(onClick = { onConfirm(timePickerState) }) {
-                Text("Confirm selection")
-            }
+            IconButton(
+                onClick = { showTimePickerDialog = true }
+            ) { Icons.Outlined.Edit }
+
         }
     }
 }
