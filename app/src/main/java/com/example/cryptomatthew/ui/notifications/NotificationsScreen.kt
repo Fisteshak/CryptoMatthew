@@ -3,14 +3,12 @@ package com.example.cryptomatthew.ui.notifications
 import android.Manifest
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -94,20 +92,21 @@ fun TimePickerPanel(
         )
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        Text(
-            "Время получения уведомления",
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
         ) {
-            Text(time)
+            Text(
+                "Время получения уведомления",
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
 
-            IconButton(
-                onClick = { showTimePickerDialog = true }
-            ) { Icons.Outlined.Edit }
+            )
+            Text(time, modifier = Modifier.clickable { showTimePickerDialog = true })
 
         }
     }

@@ -26,9 +26,6 @@ class CurrenciesRepository @Inject constructor(
         return offlineCurrenciesRepository.getCurrenciesWithFinancials()
     }
 
-    private suspend fun clearDB() {
-        offlineCurrenciesRepository.clearDB()
-    }
 
 
     suspend fun updateCurrencies(terminateAfter: Int? = null) {
@@ -55,7 +52,7 @@ class CurrenciesRepository @Inject constructor(
                         newTicker
                     }
 
-                    clearDB()
+                    offlineCurrenciesRepository.clearDB()
 
                     offlineCurrenciesRepository.insertCurrenciesData(new)
                 } else {
@@ -79,6 +76,8 @@ class CurrenciesRepository @Inject constructor(
         val ticks = response.body()
         if (response.code() == 200 && ticks != null) {
             val history = ticks.map { TickEntity(currencyId, it) }
+
+            offlineCurrenciesRepository.clearHistory(currencyId)
 
             offlineCurrenciesRepository.insertCurrencyHistory(history)
         }

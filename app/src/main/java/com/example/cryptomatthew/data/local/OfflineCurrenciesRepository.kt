@@ -71,6 +71,10 @@ class OfflineCurrenciesRepository @Inject constructor(private val currencyDao: C
         currencyDao.clearDB()
     }
 
+    suspend fun clearHistory(currencyId: String) {
+        currencyDao.deleteTickEntities(currencyId)
+    }
+
     suspend fun updateCurrencyIsFavorite(currencyId: String, isFavorite: Boolean) {
         currencyDao.updateCurrencyIsFavorite(currencyId, isFavorite)
     }

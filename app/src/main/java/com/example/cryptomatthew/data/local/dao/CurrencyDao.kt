@@ -71,6 +71,9 @@ interface CurrencyDao {
     @Query("DELETE FROM financials")
     suspend fun deleteAllFinancialEntities()
 
+    @Query("DELETE FROM tick WHERE currencyId = :currencyId")
+    suspend fun deleteTickEntities(currencyId: String)
+
     @Query("UPDATE currency SET isFavorite = :isFavorite WHERE id = :currencyId")
     suspend fun updateCurrencyIsFavorite(currencyId: String, isFavorite: Boolean)
 

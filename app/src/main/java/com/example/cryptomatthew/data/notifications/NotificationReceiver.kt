@@ -41,15 +41,19 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val len = min(old.size, new.size)
         var message = ""
-        if (len == 0) return@goAsync
+        if (len == 0) {
+            message = "Не было отмечено ни одной криптовалюты"
+        } else {
 
-        old.zip(new).forEachIndexed { index, it ->
-            message +=
-                it.first.symbol + ":  " +
-                        (it.first.finsUSD?.price?.formatLong() ?: "") +
-                        " -> " +
-                        (it.second.finsUSD?.price?.formatLong()
-                            ?: "") + (if (index != len - 1) "\n" else "")
+
+            old.zip(new).forEachIndexed { index, it ->
+                message +=
+                    it.first.symbol + ":  " +
+                            (it.first.finsUSD?.price?.formatLong() ?: "") +
+                            " -> " +
+                            (it.second.finsUSD?.price?.formatLong()
+                                ?: "") + (if (index != len - 1) "\n" else "")
+            }
         }
 
         val notificationManager =
